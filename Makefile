@@ -1,0 +1,68 @@
+NAME       := minishell
+NAME_LEX   := test_lexer
+NAME_TOK   := test_tokenizer
+NAME_PAR   := test_parser
+
+CC         := cc
+CFLAGS     := -Wall -Wextra -Werror -MMD -MP -I.
+LDFLAGS    := -lreadline
+
+SRC_LEXER      := 1.lexer/char.c 1.lexer/utils.c
+SRC_TOKENIZER  := 2.tokenizer/tokenize.c 2.tokenizer/token.c 2.tokenizer/norme__token.c
+SRC_PARSER     := 3.parser/init.c 3.parser/free.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c
+
+SRC_MINISHELL  := minishell.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
+SRC_TEST_LEX   := tests/lexer.c $(SRC_LEXER)
+SRC_TEST_TOK   := tests/tokenizer.c $(SRC_LEXER) $(SRC_TOKENIZER)
+SRC_TEST_PAR   := tests/parser.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
+
+OBJDIR      := obj
+OBJDIR_MINI := $(OBJDIR)/minishell
+OBJDIR_TLEX := $(OBJDIR)/test_lexer
+OBJDIR_TTOK := $(OBJDIR)/test_tokenizer
+OBJDIR_TPAR := $(OBJDIR)/test_parser
+
+OBJS_MINI := $(SRC_MINISHELL:%.c=$(OBJDIR_MINI)/%.o)
+OBJS_TLEX := $(SRC_TEST_LEX:%.c=$(OBJDIR_TLEX)/%.o)
+OBJS_TTOK := $(SRC_TEST_TOK:%.c=$(OBJDIR_TTOK)/%.o)
+OBJS_TPAR := $(SRC_TEST_PAR:%.c=$(OBJDIR_TPAR)/%.o)
+DEPS := $(OBJS_MINI:.o=.d) $(OBJS_TLEX:.o=.d) $(OBJS_TTOK:.o=.d) $(OBJS_TPAR:.o=.d)
+
+.PHONY: all clean fclean re test-lexer test-tokenizer test-parser
+all: $(NAME)
+
+$(NAME): $(OBJS_MINI)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+test-lexer: $(NAME_LEX)
+$(NAME_LEX): $(OBJS_TLEX)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+test-tokenizer: $(NAME_TOK)
+$(NAME_TOK): $(OBJS_TTOK)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+test-parser: $(NAME_PAR)
+$(NAME_PAR): $(OBJS_TPAR)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+$(OBJDIR_MINI)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR_TLEX)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR_TTOK)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR_TPAR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(OBJDIR)
+fclean: clean
+	rm -f $(NAME) $(NAME_LEX) $(NAME_TOK) $(NAME_PAR)
+re: fclean all
+
+-include $(DEPS)
