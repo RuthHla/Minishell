@@ -33,7 +33,7 @@ t_character	*init_node(char ch, t_ctx context, int count_word,
 	if (!node)
 		return (NULL);
 	node->c = ch;
-	node->word = count_word;
+	node->word_id = count_word;
 	if(ch == '$' && context == D_QUOTE)
 		node->type = DOLLAR;
 	else if (context != NONE)
@@ -59,7 +59,7 @@ int check_oprhan_quote(t_character *head, t_ctx current_context)
 	return 0;
 }
 
-// t_character *build_lexer_list(char *line)
+// t_character *build_char_list(char *line)
 // {
 // 	t_ctx		current_context;
 // 	t_character	*head;
@@ -81,7 +81,7 @@ int check_oprhan_quote(t_character *head, t_ctx current_context)
 // 		if (ft_isspace(line[i]) && current_context == NONE)
 // 		{
 // 			skip_char = 1;
-// 			if (tail && tail->word == count_word)
+// 			if (tail && tail->word_id == count_word)
 // 				count_word++;
 // 		}
 // 		if (line[i] == '\\' || line[i] == ';') // remplacer par check_invalid_char
@@ -114,7 +114,7 @@ static int process_space(char ch, t_ctx ctx, int *count_word, t_character *tail)
 {
     if (ft_isspace(ch) && ctx == NONE)
     {
-        if (tail && tail->word == *count_word)
+        if (tail && tail->word_id == *count_word)
             (*count_word)++;
         return 1;
     }
@@ -136,7 +136,7 @@ static int append_char(t_character **head, t_character **tail,
     return 1;
 }
 
-t_character *build_lexer_list(char *line)
+t_character *build_char_list(char *line)
 {
     t_ctx        ctx = NONE;
     t_character *head = NULL;

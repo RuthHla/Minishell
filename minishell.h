@@ -41,7 +41,7 @@ typedef enum s_ctx
 typedef struct s_character
 {
 	char				c;
-	int					word;
+	int					word_id;
 	t_type				type;
 	t_ctx				context;
 	struct s_character	*prev;
@@ -52,6 +52,7 @@ typedef struct s_token
 {
 	char				*str;
 	t_type				type;
+	// struct s_token		*prev;
 	struct s_token		*next;
 }						t_token;
 
@@ -131,16 +132,15 @@ int						handle_dollar(const char **str, t_charbuilder *b);
 // Character functions
 t_type					get_character_type(char c);
 void					free_character_list(t_character *head);
-int						malloc_structure_character(t_character **t, int n);
-// t_character *build_token_list(const char *str);
-t_character				*build_lexer_list(char *line);
+t_character				*build_char_list(char *line);
 
 // Token functions
 void					free_token_list(t_token *head);
-int						get_word_len(t_character *chars, int word);
 char					*build_token_string(t_character *chars, int len);
 t_type					get_operator_token_type(t_character *chars);
 t_token					*convert_to_tokens(t_character *chars);
+t_token 				*build_token_list(t_character *char_list);
+int 					get_token_len(t_character *char_list);
 
 // init.c
 t_command				*create_new_command(void);

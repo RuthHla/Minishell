@@ -12,13 +12,14 @@ void free_token_list(t_token *head)
 	}
 }
 
-int get_word_len(t_character *chars, int word)
+int get_token_len(t_character *char_list)
 {
 	int len = 0;
-	while (chars && chars->word == word)
+	t_character *list = char_list;
+	while (list && list->word_id == list->prev->word_id && list->type == list->prev->type)
 	{
 		len++;
-		chars = chars->next;
+		list = list->next;
 	}
 	return len;
 }
@@ -42,7 +43,7 @@ t_type get_operator_token_type(t_character *chars)
 {
 	if (chars->c == '<') return HEREDOC;
 	if (chars->c == '>') return APPEND;
-	if (chars->c == '|') return OR;
-	if (chars->c == '&') return AND;
+	if (chars->c == '|') return PIPE;
+	if (chars->c == '&') return AMPERSAND;
 	return chars->type;
 }

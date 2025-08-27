@@ -60,7 +60,7 @@ int	main(void)
 			continue ;
 		}
 		add_history(line);
-		char_list = build_lexer_list(line);
+		char_list = build_char_list(line);
 		if (!char_list)
 		{
 			free(line);
@@ -68,7 +68,7 @@ int	main(void)
 		}
 		while (char_list)
 		{
-			printf("word[%d] char[%c] type[%s] context[%s]\n", char_list->word, char_list->c,
+			printf("word[%d] char[%c] type[%s] context[%s]\n", char_list->word_id, char_list->c,
 				get_type_name(char_list->type),
 				get_ctx_name(char_list->context));
 			char_list = char_list->next;
@@ -76,3 +76,4 @@ int	main(void)
 	}
 	return (0);
 }
+// penser a free les listes char et token
