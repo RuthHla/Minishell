@@ -87,8 +87,16 @@ penser a push
 1/ finir lexer (espace + erreurs) + norme (lexer gerer)
 -> Mettre a la norme
 -> faire max tests
+-> attention caractere \ et ; doivent etre pris en compte si entre quotes
+-> regarder quand ai une variable suivi d' {} alors je met un flag braced ?
+-> minishell$ echo -n
+token[0] str[echo], type[LITERAL]
+token[1] str[-], type[UNKNOWN]
+token[2] str[n], type[LITERAL]
 
 2/ attaquer tokenizer (attention type pour $) + tests 
+-> premiere version de token -> OK  ernregistre et groupe ar type tant que cest le meme type -> manque la gestion des $ / < / & / | 
+-> deuxieme version de token -> verifier dans mon still_variable les caracere spciaux, ajouter un type de token VARIABLE_SPECIAL
 
 Gestion des erreurs :
 - [LEXER] -> \ ou ; -> OK

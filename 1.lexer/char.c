@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:00 by alandel           #+#    #+#             */
-/*   Updated: 2025/08/25 17:18:06 by alandel          ###   ########.fr       */
+/*   Updated: 2025/08/28 11:14:50 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	free_character_list(t_character *head)
 	}
 }
 
-t_character	*init_node(char ch, t_ctx context, int count_word,
+static t_character	*init_node(char ch, t_ctx context, int count_word,
 		t_character *tail)
 {
 	t_character	*node;
@@ -34,7 +34,7 @@ t_character	*init_node(char ch, t_ctx context, int count_word,
 		return (NULL);
 	node->c = ch;
 	node->word_id = count_word;
-	if(ch == '$' && context == D_QUOTE)
+	if (ch == '$' && context == D_QUOTE)
 		node->type = DOLLAR;
 	else if (context != NONE)
 		node->type = LITERAL;
@@ -48,15 +48,15 @@ t_character	*init_node(char ch, t_ctx context, int count_word,
 	return (node);
 }
 
-int check_oprhan_quote(t_character *head, t_ctx current_context)
+int	check_oprhan_quote(t_character *head, t_ctx current_context)
 {
 	if (current_context != NONE)
 	{
 		fprintf(stderr, "Find an orphan quote\n");
 		free_character_list(head);
-		return 1;
+		return (1);
 	}
-	return 0;
+	return (0);
 }
 
 // t_character *build_char_list(char *line)
@@ -84,7 +84,8 @@ int check_oprhan_quote(t_character *head, t_ctx current_context)
 // 			if (tail && tail->word_id == count_word)
 // 				count_word++;
 // 		}
-// 		if (line[i] == '\\' || line[i] == ';') // remplacer par check_invalid_char
+// 		if (line[i] == '\\' || line[i] == ';')
+			// remplacer par check_invalid_char
 // 		{
 // 			fprintf(stderr, "Find an invalid character\n");
 // 			free_character_list(head);
@@ -110,56 +111,65 @@ int check_oprhan_quote(t_character *head, t_ctx current_context)
 // 	return (head);
 // }
 
-static int process_space(char ch, t_ctx ctx, int *count_word, t_character *tail)
+static int	process_space(char ch, t_ctx ctx, int *count_word,
+		t_character *tail)
 {
-    if (ft_isspace(ch) && ctx == NONE)
-    {
-        if (tail && tail->word_id == *count_word)
-            (*count_word)++;
-        return 1;
-    }
-    return 0;
+	if (ft_isspace(ch) && ctx == NONE)
+	{
+		if (tail && tail->word_id == *count_word)
+			(*count_word)++;
+		return (1);
+	}
+	return (0);
 }
 
-static int append_char(t_character **head, t_character **tail,
-                       char ch, t_ctx ctx, int count_word)
+static int	append_char(t_character **head, t_character **tail, char ch,
+		t_ctx ctx, int count_word)
 {
-    t_character *new = init_node(ch, ctx, count_word, *tail);
-    if (!new)
-    {
-        free_character_list(*head);
-        return 0;
-    }
-    if (!*head)
-        *head = new;
-    *tail = new;
-    return 1;
+	t_character	*new;
+
+	new = init_node(ch, ctx, count_word, *tail);
+	if (!new)
+	{
+		free_character_list(*head);
+		return (0);
+	}
+	if (!*head)
+		*head = new;
+	*tail = new;
+	return (1);
 }
 
-t_character *build_char_list(char *line)
+t_character	*build_char_list(char *line)
 {
-    t_ctx        ctx = NONE;
-    t_character *head = NULL;
-    t_character *tail = NULL;
-    int          count_word = 0;
-    int          i = 0;
+	t_ctx		ctx;
+	t_character	*head;
+	t_character	*tail;
+	int			count_word;
+	int			i;
+	int			skip;
 
-    while (line[i])
-    {
-        int skip = handle_quote_context(line[i], &ctx);
-        if (process_space(line[i], ctx, &count_word, tail))
-            skip = 1;
-        if (line[i] == '\\' || line[i] == ';')
-        {
-            fprintf(stderr, "Find an invalid character\n");
-            free_character_list(head);
-            return NULL;
-        }
-        if (!skip && !append_char(&head, &tail, line[i], ctx, count_word))
-            return NULL;
-        i++;
-    }
-    if (check_oprhan_quote(head, ctx))
-        return NULL;
-    return head;
+	ctx = NONE;
+	head = NULL;
+	tail = NULL;
+	count_word = 0;
+	i = 0;
+	while (line[i])
+	{
+		skip = handle_quote_context(line[i], &ctx);
+		if (process_space(line[i], ctx, &count_word, tail))
+			skip = 1;
+		if (ctx == NONE && (line[i] == '\\' || line[i] == ';'))
+		{
+			fprintf(stderr, "Find an invalid character\n");
+			free_character_list(head);
+			return (NULL);
+		}
+		if (!skip && !append_char(&head, &tail, line[i], ctx, count_word))
+			return (NULL);
+		i++;
+	}
+	if (check_oprhan_quote(head, ctx))
+		return (NULL);
+	return (head);
 }

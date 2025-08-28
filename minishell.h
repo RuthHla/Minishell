@@ -28,6 +28,7 @@ typedef enum e_type
 	REDIR_OUT,
 	APPEND,
 	DOLLAR,
+	SPECIAL_VARIABLE,
 	UNKNOWN,
 }						t_type;
 
@@ -127,7 +128,6 @@ t_character				*add_char_node(t_charbuilder *b, char c, int type,
 int						handle_quote(const char **str, t_charbuilder *b);
 int						handle_non_space(const char **str, t_charbuilder *b);
 int						handle_char(const char **str, t_charbuilder *b);
-int						handle_dollar(const char **str, t_charbuilder *b);
 
 // Character functions
 t_type					get_character_type(char c);
@@ -139,11 +139,22 @@ void					free_token_list(t_token *head);
 char					*build_token_string(t_character *chars, int len);
 t_type					get_operator_token_type(t_character *chars);
 t_token					*convert_to_tokens(t_character *chars);
-t_token 				*build_token_list(t_character *char_list);
-int 					get_token_len(t_character *char_list);
 
-// init.c
-t_command				*create_new_command(void);
+t_token					*build_token_list(t_character *char_list);
+int						get_token_len(t_character *char_list,
+							t_type current_type, int current_word, int flag);
+
+int						get_variable_len(t_character *char_list, int len);
+int						valid_variable_char(char c);
+int						special_variable(char c);
+int						handle_dollar(t_character **char_list, int *flag);
+
+
+// t_token					*init_node(t_token **head, t_token **tail, t_character *char_list,
+	// 		t_type current_type, int current_word);
+
+	// init.c
+	t_command *create_new_command(void);
 t_command				*init_struct_globale(t_token *token_list, char **line);
 
 // parse_token.c

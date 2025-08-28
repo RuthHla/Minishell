@@ -62,12 +62,7 @@ int	main(void)
 		int i = 0;
 		while(token_list)
 		{
-			int j = 0;
-			while(token_list->str[j] != '\0')
-			{
-				printf("token[%d] str[%s], type[%s]\n", i, token_list->str, get_type_name(token_list->type));
-				j++;
-			}
+			printf("token[%d] str[%s], type[%s]\n", i, token_list->str, get_type_name(token_list->type));
 			i++;
 			token_list = token_list->next;
 		}
