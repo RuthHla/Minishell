@@ -1,4 +1,28 @@
 
+Gestion des erreurs :
+1. Pipes
+Pipe en début : | ls → erreur.
+Pipe en fin : ls | → erreur.
+Pipes consécutifs sans commande au milieu : ls || wc → erreur.
+2. Redirections
+Redirection sans cible : ls > ou cat <.
+Redirection suivie d’un opérateur invalide : ls > | wc.
+Plusieurs redirections à la suite sans mot entre : ls > > out (bash dit syntax error near unexpected token '>').
+3. Heredoc
+<< sans délimiteur : cat << → erreur.
+<< suivi d’un opérateur au lieu d’un mot : cat << | wc → erreur.
+4. Mots vides (selon ton design)
+Exemple : echo "" → c’est valide (argument vide).
+Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
+5. Enlever le traitement du & -> enregistrer en tant que LITERAL
+
+AFFICHER LES ERREURS SUR LA STDERR (fprintf)
+ATTENTION :
+$| $> $& --> 1 token LITERAL au lieu de 2 tokens au typage different
+$"oui"sal  ou   oui$$ --> 1 seul token exigé  
+
+
+
 
 // <!-- Prototype + definition des fonctions autorisees : -->
 
@@ -82,26 +106,4 @@ int     tgetnum(const char *id);                              // lit une capacit
 char   *tgetstr(const char *id, char **area);                 // lit une séquence de contrôle ou NULL
 char   *tgoto(const char *cap, int col, int row);             // génère la séquence de positionnement
 int     tputs(const char *str, int affcnt, int (*putc)(int)); // affiche `str` via `putc`
-
-penser a push 
-1/ finir lexer (espace + erreurs) + norme (lexer gerer)
--> Mettre a la norme
--> faire max tests
--> attention caractere \ et ; doivent etre pris en compte si entre quotes
--> regarder quand ai une variable suivi d' {} alors je met un flag braced ?
--> minishell$ echo -n
-token[0] str[echo], type[LITERAL]
-token[1] str[-], type[UNKNOWN]
-token[2] str[n], type[LITERAL]
-
-2/ attaquer tokenizer (attention type pour $) + tests 
--> premiere version de token -> OK  ernregistre et groupe ar type tant que cest le meme type -> manque la gestion des $ / < / & / | 
--> deuxieme version de token -> verifier dans mon still_variable les caracere spciaux, ajouter un type de token VARIABLE_SPECIAL
-
-Gestion des erreurs :
-- [LEXER] -> \ ou ; -> OK
-- [LEXER] -> quote non fermée -> OK
-- [Parser] -> pipe en fin de ligne ->
-- [Parser] -> opérateur mal formé (ex: >>>) ->
-- [Parser] -> redir sans cible (fin de ligne ou opérateur à la place d’un mot) ->
-- [Parser] -> opérateur logique isolé / mal placé (&&, ||, ;, &) ->
+                                     

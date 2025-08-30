@@ -34,9 +34,9 @@ int	is_redir(t_type type)
 
 int	is_operator(t_type type)
 {
-	if (type == PIPE || type == OR || type == AMPERSAND || type == AND
+	if (type == PIPE || type == AMPERSAND
 		|| type == REDIR_IN || type == HEREDOC || type == REDIR_OUT
-		|| type == APPEND)
+		|| type == APPEND || type == DOLLAR || type == SPECIAL_VARIABLE)
 		return (1);
 	return (0);
 }

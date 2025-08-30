@@ -1,0 +1,13 @@
+    flag 0 -> calculer tant quon a le meme type de caractere
+
+    flag 1 -> "$USER" cas normal de variable denvironnement
+
+    flag 2 -> "$X" VARIABLE_SPECIAL (commence par un chiffre ou ?)
+     
+    flag 3 -> "$/"  (commence par un arret dexpansion donc tout en LITERAL)
+    
+    flag 4 -> '$' seul
+
+
+    PROBLEME si :   echo $"HOME"
+     

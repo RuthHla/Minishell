@@ -36,8 +36,9 @@ t_command	*init_struct_globale(t_token *token_list, char **line)
 	cmd = create_new_command();
 	if (!cmd)
 		return (NULL);
-	if (!parse_token(cmd, token_list, line))
+	if (!parse_token(token_list))
 		return NULL;
-	save_all(cmd, token_list, line);
+	if (!save_all(cmd, token_list, line))
+		return NULL;
 	return (cmd);
 }

@@ -59,57 +59,15 @@ int	check_oprhan_quote(t_character *head, t_ctx current_context)
 	return (0);
 }
 
-// t_character *build_char_list(char *line)
-// {
-// 	t_ctx		current_context;
-// 	t_character	*head;
-// 	t_character	*tail;
-// 	int			skip_char;
-// 	int			count_word;
-// 	int			i;
-// 	t_character	*new_node;
+static int should_increment_word(t_ctx old_ctx, t_ctx new_ctx, char ch, t_character *tail)
+{
+	if (old_ctx != NONE && new_ctx == NONE && !ft_isspace(ch))
+		return (1);
+	if (old_ctx == NONE && new_ctx != NONE && tail && tail->word_id >= 0)
+		return (1);
+	return (0);
+}
 
-// 	current_context = NONE;
-// 	head = NULL;
-// 	tail = NULL;
-// 	skip_char = 0;
-// 	count_word = 0;
-// 	i = 0;
-// 	while (line[i] != '\0')
-// 	{
-// 		skip_char = handle_quote_context(line[i], &current_context);
-// 		if (ft_isspace(line[i]) && current_context == NONE)
-// 		{
-// 			skip_char = 1;
-// 			if (tail && tail->word_id == count_word)
-// 				count_word++;
-// 		}
-// 		if (line[i] == '\\' || line[i] == ';')
-			// remplacer par check_invalid_char
-// 		{
-// 			fprintf(stderr, "Find an invalid character\n");
-// 			free_character_list(head);
-// 			return (NULL);
-// 		}
-// 		if (!skip_char)
-// 		{
-// 			new_node = init_node(line[i], current_context, count_word, tail);
-// 			if (!new_node)
-// 			{
-// 				free_character_list(head);
-// 				return (NULL);
-// 			}
-// 			if (!head)
-// 				head = new_node;
-// 			tail = new_node;
-// 		}
-// 		skip_char = 0;
-// 		i++;
-// 	}
-// 	if (check_oprhan_quote(head, current_context))
-// 		return (NULL);
-// 	return (head);
-// }
 
 static int	process_space(char ch, t_ctx ctx, int *count_word,
 		t_character *tail)
@@ -143,6 +101,7 @@ static int	append_char(t_character **head, t_character **tail, char ch,
 t_character	*build_char_list(char *line)
 {
 	t_ctx		ctx;
+	t_ctx		old_ctx;
 	t_character	*head;
 	t_character	*tail;
 	int			count_word;
@@ -150,13 +109,17 @@ t_character	*build_char_list(char *line)
 	int			skip;
 
 	ctx = NONE;
+	old_ctx = NONE;
 	head = NULL;
 	tail = NULL;
 	count_word = 0;
 	i = 0;
 	while (line[i])
 	{
+		old_ctx = ctx;
 		skip = handle_quote_context(line[i], &ctx);
+		if (should_increment_word(old_ctx, ctx, line[i], tail))
+			count_word++;
 		if (process_space(line[i], ctx, &count_word, tail))
 			skip = 1;
 		if (ctx == NONE && (line[i] == '\\' || line[i] == ';'))

@@ -69,5 +69,4 @@ void	cleanall_exit(t_command *cmd, t_token *token_list, char **line)
 		free(*line);
 		*line = NULL;
 	}
-	// *line = readline("minishell$ ");
 }

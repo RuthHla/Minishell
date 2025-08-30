@@ -20,6 +20,8 @@ static const char	*get_type_name(t_type type)
 		return (">>");
 	case DOLLAR:
 		return ("$");
+	case SPECIAL_VARIABLE:
+		return ("SPECIAL_VARIABLE");
 	default:
 		return ("UNKNOWN");
 	}

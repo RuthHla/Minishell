@@ -119,8 +119,8 @@ t_type					get_character_type(char c);
 int						handle_quote_context(char c, t_ctx *current_context);
 
 // Norme functions
-int						append_token(t_token **head, t_token **current,
-							t_token *new_token);
+// int						append_token(t_token **head, t_token **current,
+// 							t_token *new_token);
 t_token					*create_token_from_chars(t_character *chars,
 							int word_id);
 t_character				*add_char_node(t_charbuilder *b, char c, int type,
@@ -135,20 +135,29 @@ void					free_character_list(t_character *head);
 t_character				*build_char_list(char *line);
 
 // Token functions
-void					free_token_list(t_token *head);
 char					*build_token_string(t_character *chars, int len);
 t_type					get_operator_token_type(t_character *chars);
 t_token					*convert_to_tokens(t_character *chars);
 
 t_token					*build_token_list(t_character *char_list);
-int						get_token_len(t_character *char_list,
-							t_type current_type, int current_word, int flag);
 
-int						get_variable_len(t_character *char_list, int len);
+// tokenizer -> Utils.c
+void					free_token_list(t_token *head);
 int						valid_variable_char(char c);
-int						special_variable(char c);
-int						handle_dollar(t_character **char_list, int *flag);
+int 					is_operator_char(char c);
 
+int create_variable_token(t_token **h, t_token **t, t_character **p);
+int create_special_variable_token(t_token **h, t_token **t, t_character **p);
+int create_dollar_literal(t_token **h, t_token **t, t_character **p);
+int create_single_dollar_literal(t_token **h, t_token **t, t_character **p);
+int create_dollar_quoted_token(t_token **h, t_token **t, t_character **p);
+
+
+int same_word(t_character *a, t_character *b);
+t_token *new_token(t_type type, size_t len);
+void append_token(t_token **head, t_token **tail, t_token *node);
+int create_normal_token(t_token **h, t_token **t, t_character **p);
+int create_operator_token(t_token **h, t_token **t, t_character **p);
 
 // t_token					*init_node(t_token **head, t_token **tail, t_character *char_list,
 	// 		t_type current_type, int current_word);
@@ -157,9 +166,8 @@ int						handle_dollar(t_character **char_list, int *flag);
 	t_command *create_new_command(void);
 t_command				*init_struct_globale(t_token *token_list, char **line);
 
-// parse_token.c
-int						parse_token(t_command *cmd, t_token *token_list,
-							char **line);
+int	parse_token(t_token *token_list);
+
 // utils.c
 void					*lst_last_node(void *head);
 int						is_redir(t_type type);
@@ -173,7 +181,7 @@ void					cleanall_exit(t_command *cmd, t_token *token_list,
 							char **line);
 
 // cmd.c
-void					save_all(t_command *cmd, t_token *token_list,
-							char **line);
+int	save_all(t_command *cmd, t_token *token_list, char **line);
+
 
 #endif

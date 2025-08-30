@@ -1,142 +1,159 @@
-#include "../minishell.h"
+#include "minishell.h"
+//IMPORTANT -> securiser les fonctions
 
-// gestion des dollars classiques OK
-// manque special ?! et $ et $1 != $a4 attention ausi a echo $"ca va" (il faut verifier que nai pas de quote qd jenregistre en variable)
-// traiter les redirections
-// si la varaiable commence par un caractere stopant lexpansion alors afficher brute avec le dollar "echo $/",
-// sinon rien afficher (car pas trouver dans les variables denvironnements) puis ce qui suit (type LITERAL)
-
-static void	merge_node(t_token **head, t_token **tail, t_token *new_node)
+typedef enum e_action 
 {
-	if (*head == NULL)
-	{
-		*head = new_node;
-		*tail = new_node;
-	}
-	else
-	{
-		(*tail)->next = new_node;
-		*tail = new_node;
-	}
+    ACT_NORMAL = 0,
+    ACT_VAR_NAME,
+    ACT_VAR_SPECIAL,
+    ACT_DOLLAR_LITERAL,
+    ACT_DOLLAR_SOLO,
+    ACT_OPERATOR,
+    ACT_SKIP_DOLLAR_QUOTE
+}   t_action;
+
+static t_action decide_action(t_character *char_list)
+{
+    t_character *n;
+
+    if (!char_list)
+        return (ACT_NORMAL);
+    if (is_operator_char(char_list->c))
+        return (ACT_OPERATOR);
+    if (char_list->c == '$' && char_list->context != S_QUOTE)
+    {
+        n = char_list->next;
+		if (!n)
+            return (ACT_DOLLAR_SOLO);
+		if (n->context != NONE && char_list->context == NONE)
+            return (ACT_SKIP_DOLLAR_QUOTE);
+        if (!same_word(char_list, n))
+            return (ACT_DOLLAR_SOLO);
+        if (n->c == '?')
+            return (ACT_VAR_SPECIAL);
+        if (valid_variable_char(n->c))
+            return (ACT_VAR_NAME);
+        return (ACT_DOLLAR_LITERAL);
+    }
+    return (ACT_NORMAL);
 }
 
-static t_token	*init_node(t_token **head, t_token **tail,
-		t_character *char_list, int flag)
+int create_normal_token(t_token **h, t_token **t, t_character **p)
 {
-	int		len;
-	t_token	*new_node;
+    t_character *s = *p;
+    t_character *c = s;
+    size_t      len = 0;
 
-	len = 0;
-	new_node = malloc(sizeof(t_token));
-	if (!new_node)
-		return (NULL);
-	new_node->str = NULL;
-	new_node->next = NULL;
-	if (flag == 1)
-		new_node->type = DOLLAR;
-	else if (flag == 2)
-		new_node->type = SPECIAL_VARIABLE;
-	else
-		new_node->type = char_list->type;
-	len = get_token_len(char_list, char_list->type, char_list->word_id,
-			flag);
-	new_node->str = malloc(sizeof(char) * (len + 1));
-	if (!new_node->str)
-	{
-		free(new_node);
-		return (NULL);
-	}
-	merge_node(head, tail, new_node);
-	return (new_node);
+    while (c && same_word(s, c))
+    {
+        if (is_operator_char(c->c))
+            break;
+
+        if (c->c == '$' && c->context != S_QUOTE)
+        {
+            t_character *n = c->next;
+            /* <-- clé : si '$' est le dernier char du mot, on l'absorbe */
+            if (!n || !same_word(c, n))
+            {
+                len++;
+                c = c->next;   /* on consomme le '$' final */
+            }
+            break;              /* sinon on s'arrête avant '$' */
+        }
+
+        len++;
+        c = c->next;
+    }
+
+    if (len == 0) 
+		return 1;
+
+    t_token *tok = new_token(LITERAL, len);
+    if (!tok) 
+		return 0;
+
+    c = s;
+    for (size_t i = 0; i < len && c; i++, c = c->next)
+        tok->str[i] = c->c;
+    tok->str[len] = '\0';
+
+    append_token(h, t, tok);
+    *p = c;   /* on avance */
+
+    return 1;
 }
 
-static void	fill_str(t_token **tail, t_character **char_list,
-		t_type current_type, int current_word, int flag)
+int create_operator_token(t_token **h, t_token **t, t_character **p)
 {
-	int			i;
-	t_character	*c_list;
+    t_character *c;
+    t_type      type;
+    size_t      len;
+    t_token     *tok;
+    t_character *n;
 
-	c_list = (*char_list);
-	i = 0;
-	if (flag == 1)
-	{
-		while (c_list && valid_variable_char(c_list->c))
-		{
-			(*tail)->str[i++] = (c_list)->c;
-			(c_list) = (c_list)->next;
-		}
-		(*tail)->str[i] = '\0';
-		(*char_list) = c_list;
-		return;
-	}
-	else if (flag == 2)
-	{
-		(*tail)->str[i++] = '$';
-		(*tail)->str[i++] = c_list->next->c;
-		(*tail)->str[i] = '\0';
-		*char_list = c_list->next->next;
-		return;
-	}
-	
-	while(c_list && c_list->type == current_type && c_list->word_id == current_word)
-	{
-		(*tail)->str[i++] = c_list->c;
-		c_list = c_list->next;
-	}
-	(*tail)->str[i] = '\0';
-	*char_list = c_list;
+    c = *p;
+    n = (c ? c->next : NULL);
+    type = UNKNOWN;
+    len = 1;
+    if (c->c == '|') type = PIPE;
+    else if (c->c == '&') type = AMPERSAND;
+    else if (c->c == '<')
+    {
+        if (n && same_word(c, n) && n->c == '<') { type = HEREDOC; len = 2; }
+        else type = REDIR_IN;
+    }
+    else if (c->c == '>')
+    {
+        if (n && same_word(c, n) && n->c == '>') { type = APPEND; len = 2; }
+        else type = REDIR_OUT;
+    }
+    tok = new_token(type, len);
+    if (!tok)
+        return (0);
+    tok->str[0] = c->c;
+    if (len == 2 && n)
+        tok->str[1] = n->c;
+    tok->str[len] = '\0';
+    append_token(h, t, tok);
+    if (len == 2 && n)
+        *p = n->next;
+    else
+        *p = c->next;
+    return (1);
 }
 
-t_token	*build_token_list(t_character *char_list)
+t_token *build_token_list(t_character *char_list)
 {
-	t_token	*head;
-	t_token	*tail;
-	int		current_word;
-	t_type	current_type;
-	int		flag;
+    t_token *head;
+    t_token *tail;
+    t_action a;
 
-	head = NULL;
-	tail = NULL;
-	while (char_list)
-	{
-		flag = 0;
-		(void)handle_dollar(&char_list, &flag);
-		if (!init_node(&head, &tail, char_list, flag))
-		{
-			free_token_list(head);
-			return (NULL);
-		}
-		current_word = char_list->word_id;
-		current_type = char_list->type;
-		fill_str(&tail, &char_list, current_type, current_word, flag);
-	}
-	return (head);
-}
-
-int	handle_dollar(t_character **char_list, int *flag)
-{
-	t_character	*next;
-	t_character	*c;
-
-	if (!char_list || !*char_list)
-		return (0);
-	c = *char_list;
-	if (c->c != '$' || c->context == S_QUOTE)
-		return (0);
-	next = c->next;
-	if (!next || (c->word_id != next->word_id))
-		return (0);
-	if (next && next->context == NONE && special_variable(next->c))
-	{
-		*flag = 2;
-		*char_list = c;
-		return (1);
-	}
-	if (next && valid_variable_char(next->c))
-	{
-		*flag = 1;
-		*char_list = next;
-		return (1);
-	}
-	return (0);
+    head = NULL;
+    tail = NULL;
+    while (char_list)
+    {
+        a = decide_action(char_list);
+        if (a == ACT_SKIP_DOLLAR_QUOTE)
+        {
+            if (!create_dollar_quoted_token(&head, &tail, &char_list))
+                return (free_token_list(head), NULL);
+        }
+        else if (a == ACT_OPERATOR && !create_operator_token(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        else if (a == ACT_VAR_NAME && !create_variable_token(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        else if (a == ACT_VAR_SPECIAL && !create_special_variable_token(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        else if (a == ACT_DOLLAR_LITERAL && !create_dollar_literal(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        else if (a == ACT_DOLLAR_SOLO && !create_single_dollar_literal(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        else if (a == ACT_NORMAL && !create_normal_token(&head, &tail, &char_list))
+            return (free_token_list(head), NULL);
+        if (a == ACT_SKIP_DOLLAR_QUOTE)
+            continue ;
+        if (a == ACT_NORMAL && char_list == NULL)
+            break ;
+    }
+    return (head);
 }

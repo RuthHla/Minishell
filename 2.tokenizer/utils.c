@@ -1,9 +1,9 @@
 #include "../minishell.h"
+//IMPORTANT -> securiser les fonctions
 
 int	valid_variable_char(char c)
 {
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0'
-			&& c <= '9') || c == '_')
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
 		return (1);
 	return (0);
 }
@@ -21,39 +21,53 @@ void	free_token_list(t_token *head) // verfier si assez securise
 	}
 }
 
-int	get_token_len(t_character *char_list, t_type current_type, int current_word, int flag)
+int is_operator_char(char c)
 {
-	int			len;
-	t_character	*list;
-
-	len = 0;
-	list = char_list;
-	if(flag == 0)
-	{
-		while (list && list->word_id == current_word && list->type == current_type)
-		{
-			len++;
-			list = list->next;
-		}
-	}
-	else if (flag == 1) //cas classique de variable valide
-	{
-		while (list && valid_variable_char(list->c))
-		{
-			len++;
-			list = list->next;
-		}
-	}
-
-	else if (flag == 2) // speicale variable la len est a 2
-		len = 2;
-
-	return (len);
+    if (c == '|' || c == '&' || c == '<' || c == '>')
+        return (1);
+    return (0);
 }
 
-int special_variable(char c)
+int same_word(t_character *a, t_character *b)
 {
-	if ((c >= '0' && c <= '9') || (c == '?'))
-		return 1;
-	return 0;
+    if (!a || !b)
+        return (0);
+    if (a->word_id == b->word_id)
+        return (1);
+    return (0);
+}
+
+t_token *new_token(t_type type, size_t len)
+{
+    t_token *tkn;
+
+    tkn = (t_token *)malloc(sizeof(*tkn));
+    if (!tkn)
+        return (NULL);
+    tkn->str = (char *)malloc(len + 1);
+    if (!tkn->str)
+    {
+        free(tkn);
+        return (NULL);
+    }
+    tkn->type = type;
+    tkn->next = NULL;
+    tkn->str[0] = '\0';
+    return (tkn);
+}
+
+void append_token(t_token **head, t_token **tail, t_token *node)
+{
+    if (!node)
+        return ;
+    if (!*head)
+    {
+        *head = node;
+        *tail = node;
+    }
+    else
+    {
+        (*tail)->next = node;
+        *tail = node;
+    }
 }
