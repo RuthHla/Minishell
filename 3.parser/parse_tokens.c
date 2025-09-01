@@ -12,26 +12,7 @@
 
 #include "../minishell.h"
 
-static int	check_first_and_last_place(t_token *token_list)
-{
-	t_token	*last_node;
-
-	last_node = NULL;
-	if (token_list->type == PIPE)
-	{
-		fprintf(stderr, "bash: syntax error near unexpected token '%s'\n",token_list->str);
-		return (1);
-	}
-	last_node = lst_last_node(token_list);
-	if (last_node && last_node->type == PIPE)
-	{
-		fprintf(stderr, "bash: syntax error near unexpected token '%s'\n", last_node->str);
-		return (1);
-	}
-	return (0);
-}
-
-int check_redir(t_token *token_list)
+static int check_redir(t_token *token_list)
 {
     t_token *tkn;
     t_token *target;
@@ -63,13 +44,42 @@ int check_redir(t_token *token_list)
     return (1);
 }
 
+static int check_pipe(t_token *token_list)
+{
+    t_token *tkn;
+    t_token *target;
+
+    tkn = token_list;
+    if (!tkn)
+        return 1;
+
+    if (tkn->type == PIPE)
+	{
+		fprintf(stderr,"bash: syntax error near unexpected token '|'\n");
+        return 0;
+	}
+    while (tkn)
+    {
+        target = tkn->next;
+        if (tkn->type == PIPE)
+        {
+            if (!target || target->type == PIPE)
+			{
+				fprintf(stderr,"bash: syntax error near unexpected token '|'\n");
+                return 0;
+			}
+        }
+        tkn = target;
+    }
+    return 1;
+}
 
 int	parse_token(t_token *token_list)
 {
-	if (check_first_and_last_place(token_list))
-        return 0;
-
 	if(!check_redir(token_list))
+		return 0;
+
+	if(!check_pipe(token_list))
 		return 0;
     
     return 1;
