@@ -8,8 +8,6 @@ static const char	*get_type_name(t_type type)
 		return ("LITERAL");
 	case PIPE:
 		return ("PIPE");
-	case AMPERSAND:
-		return ("ampersand");
 	case REDIR_IN:
 		return ("<");
 	case HEREDOC:

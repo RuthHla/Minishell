@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:36:17 by alandel           #+#    #+#             */
-/*   Updated: 2025/06/26 11:36:18 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/01 18:32:26 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,20 +28,32 @@ static void	free_redir(t_redir *redir)
 	}
 }
 
-void	free_args(t_arg *args, size_t nb_args)
+static void	free_element_list(t_element *element)
 {
-	size_t	i;
+	t_element	*current;
+	t_element	*next;
 
-	i = 0;
-	if (!args)
-		return ;
-	while (i < nb_args)
+	current = element;
+	while (current)
 	{
-		if (args[i].str)	
-			free(args[i++].str);
-		i++;
+		next = current->next;
+		if (current->kind == ARG)
+		{
+			if (current->u_.arg)
+			{
+				if (current->u_.arg->str)
+					free(current->u_.arg->str);
+				free(current->u_.arg);
+			}
+		}
+		else if (current->kind == REDIR)
+		{
+			if (current->u_.redirs)
+				free_redir(current->u_.redirs);
+		}
+		free(current);
+		current = next;
 	}
-	free(args);
 }
 
 void	cleanup(t_command *cmd)
@@ -53,8 +65,8 @@ void	cleanup(t_command *cmd)
 	while (current)
 	{
 		next = current->next;
-		free_args(current->args, current->nb_args);
-		free_redir(current->redirs);
+		if (current->element)
+			free_element_list(current->element);
 		free(current);
 		current = next;
 	}

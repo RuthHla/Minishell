@@ -1,7 +1,7 @@
 
-Gestion des erreurs :
+Parser :
 
-
+0. Nouvelle srtucture t_command garantissant le bon ordre des tokens
 1. Append / HEREDOC / > peuvent commencer en debut de ligne -> il faut une target 
    < peut commencer si chemin targe valide
 >> suivi d’un opérateur ou rien au lieu d’un mot : "cat << |" "cat << "  → erreur (a veriifier).
@@ -9,7 +9,7 @@ NE pas traier redir et << >> pareil car ??
 2. Mots vides
 Exemple : echo "" → c’est valide (argument vide).
 Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
-3. Enlever le traitement du & -> enregistrer en tant que LITERAL
+3. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
 4. Remplacer les variables par les chemins (aller chercher varibale d'environnement)
 5. Si une commande NOT_BUILTIN et commande autre que demande par le sujet 
 -> return "bash: %s: command not found"
@@ -17,9 +17,8 @@ Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
 
 
 AFFICHER LES ERREURS SUR LA STDERR (fprintf)
-ATTENTION :
-$| $> $& --> 1 token LITERAL au lieu de 2 tokens au typage different
-$"oui"sal  ou   oui$$ --> 1 seul token exigé  
+
+Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
 
 
 

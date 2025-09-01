@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:36:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 16:25:05 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/01 17:06:28 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,10 @@ t_command	*create_new_command(void)
 {
 	t_command	*cmd;
 
-	cmd = malloc(sizeof(t_command));
+	cmd = calloc(1, sizeof(t_command));
 	if (!cmd)
 		return (NULL);
 	cmd->cmd = CMD_NONE;
-	cmd->args = NULL;
-	cmd->nb_args = 0;
-	cmd->redirs = NULL;
-	cmd->has_pipe_out = 0;
-	cmd->next = NULL;
-	cmd->previous = NULL;
 	return (cmd);
 }
 

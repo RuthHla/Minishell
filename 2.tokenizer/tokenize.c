@@ -96,7 +96,6 @@ int create_operator_token(t_token **h, t_token **t, t_character **p)
     type = UNKNOWN;
     len = 1;
     if (c->c == '|') type = PIPE;
-    else if (c->c == '&') type = AMPERSAND;
     else if (c->c == '<')
     {
         if (n && same_word(c, n) && n->c == '<') { type = HEREDOC; len = 2; }

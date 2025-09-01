@@ -22,7 +22,6 @@ typedef enum e_type
 {
 	LITERAL,
 	PIPE,
-	AMPERSAND, // a gerer ?
 	REDIR_IN,
 	HEREDOC,
 	REDIR_OUT,
@@ -83,14 +82,30 @@ typedef struct s_arg
 	t_type				type;
 }						t_arg;
 
+typedef enum e_element_kind
+{
+	ARG,
+	REDIR,
+}						t_element_kind;
+
+typedef struct s_element
+{
+	t_element_kind		kind;
+	union
+	{
+		t_redir			*redirs;
+		t_arg			*arg;
+	} u_;
+	struct s_element	*next;
+}						t_element;
+
 // changer pour savoir ce qui arrive en premier entre la redirection et les
 typedef struct s_command
 {
 	t_type_cmd			cmd;
-	t_arg				*args; // tableau de t_arg (execve attend un tableau char *argv[] terminé par NULL)
+	t_element			*element;
 	size_t				nb_args;
-	t_redir				*redirs;
-	int					has_pipe_out; // semble in
+	int					has_pipe_out;
 	struct s_command	*next;
 	struct s_command	*previous;
 }						t_command;
@@ -170,13 +185,19 @@ t_command				*init_struct_globale(t_token *token_list, char **line);
 int						parse_token(t_token *token_list);
 
 // utils.c
-void					*lst_last_node(void *head);
+t_element				*lst_last_node(t_element *head);
 int						is_redir(t_type type);
 int						is_operator(t_type type);
 int						is_command(t_type_cmd type);
 t_type_cmd				identify_builtin(const char *str);
-void					add_redir_to_tail(t_redir **head, t_redir **tail,
-							t_redir *new_node);
+t_arg					*create_arg(t_type type, const char *str);
+t_redir					*create_redir(t_type type, const char *target,
+							t_type target_type);
+t_element				*create_element_arg(t_type type, const char *str);
+t_element				*create_element_redir(t_type type, const char *target,
+							t_type target_type);
+void					add_element_to_command(t_command *cmd,
+							t_element *element);
 
 // free.c
 void					cleanup(t_command *cmd);
@@ -186,5 +207,8 @@ void					cleanall_exit(t_command *cmd, t_token *token_list,
 // cmd.c
 int						save_all(t_command *cmd, t_token *token_list,
 							char **line);
+int						add_cmd(t_command *cmd, char *str);
+int						add_argument(t_command *cmd, t_type type,
+							const char *str);
 
 #endif
