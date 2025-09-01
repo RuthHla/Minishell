@@ -35,6 +35,7 @@ void print_tokens(t_token *token_list)
 			get_type_name(token_list->type));
 }
 
+// refaire avec nouvelle structure pour que ce oit dans lordre 
 void print_command_structure(t_command *cmd_list)
 {
 	while (cmd_list)
@@ -48,7 +49,7 @@ void print_command_structure(t_command *cmd_list)
 		{
 			printf("    (redir)[%s]\n", get_type_name(r->type));
 			if (r->target)
-				printf("        (target)[LITERAL] -> %s\n", r->target);
+				printf("        (target)[%s] -> %s\n", get_type_name(r->target_type), r->target);
 			else
 				printf("        (target)[UNKNOWN]\n");
 		}
@@ -58,6 +59,65 @@ void print_command_structure(t_command *cmd_list)
 		cmd_list = cmd_list->next;
 	}
 }
+
+// void	print_command_structure(t_command *cmd_list)
+// {
+// 	int			cidx = 0;
+
+// 	printf("=== COMMAND STRUCTURE ===\n");
+// 	for (; cmd_list; cmd_list = cmd_list->next, ++cidx)
+// 	{
+// 		/* 1) commande (type builtin ou not_builtin) */
+// 		printf("cmd[%d]: %s", cidx, get_cmd_name(cmd_list->cmd));
+// 		/* petit plus: si NOT_BUILTIN et au moins un arg, on montre le binaire */
+// 		if (cmd_list->cmd == NOT_BUILTIN && cmd_list->nb_args > 0
+// 			&& cmd_list->args && cmd_list->args[0].str)
+// 			printf("  program:\"%s\"", cmd_list->args[0].str);
+// 		printf("\n");
+
+// 		/* 2) arguments (ordre exact du tableau args[0..nb_args-1]) */
+// 		if (!cmd_list->args || cmd_list->nb_args == 0)
+// 			printf("  args: [none]\n");
+// 		else
+// 		{
+// 			for (size_t i = 0; i < cmd_list->nb_args; ++i)
+// 			{
+// 				const char *s = cmd_list->args[i].str ? cmd_list->args[i].str : "";
+// 				printf("  arg[%zu]: \"%s\" (type:%s)\n",
+// 					i, s, get_type_name(cmd_list->args[i].type));
+// 			}
+// 		}
+
+// 		/* 3) redirections (ordre exact de la liste chaînée redirs->next) */
+// 		if (!cmd_list->redirs)
+// 			printf("  redirs: [NULL -> pb]\n");
+// 		else
+// 		{
+// 			int ridx = 0;
+// 			for (t_redir *r = cmd_list->redirs; r; r = r->next, ++ridx)
+// 			{
+// 				printf("  redir[%d]: %s", ridx, get_type_name(r->type));
+// 				printf("\n");
+// 				if (r->target)
+// 				{
+// 					/* on affiche le type original de la cible si dispo */
+// 					printf("    target: \"%s\" (type:%s)\n",
+// 						r->target,
+// 						get_type_name(r->target_type));
+// 				}
+// 				else
+// 					printf("    target: [NULL]\n");
+// 			}
+// 		}
+
+// 		/* 4) pipe sortant si présent */
+// 		if (cmd_list->has_pipe_out)
+// 			printf("  pipe: |\n");
+
+// 		printf("\n");
+// 	}
+// 	printf("=========================\n");
+// }
 
 int main(void)
 {

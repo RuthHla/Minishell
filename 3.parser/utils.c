@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:36:06 by alandel           #+#    #+#             */
-/*   Updated: 2025/06/26 13:00:39 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/01 13:18:06 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ int	is_redir(t_type type)
 
 int	is_operator(t_type type)
 {
-	if (type == PIPE || type == AMPERSAND
-		|| type == REDIR_IN || type == HEREDOC || type == REDIR_OUT
-		|| type == APPEND || type == DOLLAR || type == SPECIAL_VARIABLE)
+	if (type == PIPE || type == AMPERSAND || type == REDIR_IN || type == HEREDOC
+		|| type == REDIR_OUT || type == APPEND || type == DOLLAR
+		|| type == SPECIAL_VARIABLE)
 		return (1);
 	return (0);
 }
@@ -68,4 +68,18 @@ t_type_cmd	identify_builtin(const char *str)
 	if (strcmp(str, "exit") == 0)
 		return (T_EXIT);
 	return (NOT_BUILTIN);
+}
+
+void	add_redir_to_tail(t_redir **head, t_redir **tail, t_redir *new_node)
+{
+	if (!*head)
+	{
+		*head = new_node;
+		*tail = new_node;
+	}
+	else
+	{
+		(*tail)->next = new_node;
+		*tail = new_node;
+	}
 }

@@ -53,15 +53,14 @@ typedef struct s_token
 {
 	char				*str;
 	t_type				type;
-	// struct s_token		*prev;
 	struct s_token		*next;
 }						t_token;
 
 typedef struct s_redir
 {
 	t_type				type;
+	t_type				target_type;
 	char				*target;
-	int					error;
 	struct s_redir		*next;
 }						t_redir;
 
@@ -84,16 +83,14 @@ typedef struct s_arg
 	t_type				type;
 }						t_arg;
 
+// changer pour savoir ce qui arrive en premier entre la redirection et les
 typedef struct s_command
 {
 	t_type_cmd			cmd;
-	t_arg				*args;
-	// tableau de t_arg (execve attend un tableau char *argv[] terminé par NULL)
+	t_arg				*args; // tableau de t_arg (execve attend un tableau char *argv[] terminé par NULL)
 	size_t				nb_args;
 	t_redir				*redirs;
-	// liste chainee de redirection (noeud contenant error si pas de target,
-	// la target est enregistree dans le noeud)
-	int					has_pipe_out;
+	int					has_pipe_out; // semble in
 	struct s_command	*next;
 	struct s_command	*previous;
 }						t_command;
@@ -144,29 +141,33 @@ t_token					*build_token_list(t_character *char_list);
 // tokenizer -> Utils.c
 void					free_token_list(t_token *head);
 int						valid_variable_char(char c);
-int 					is_operator_char(char c);
+int						is_operator_char(char c);
 
-int create_variable_token(t_token **h, t_token **t, t_character **p);
-int create_special_variable_token(t_token **h, t_token **t, t_character **p);
-int create_dollar_literal(t_token **h, t_token **t, t_character **p);
-int create_single_dollar_literal(t_token **h, t_token **t, t_character **p);
-int create_dollar_quoted_token(t_token **h, t_token **t, t_character **p);
+int						create_variable_token(t_token **h, t_token **t,
+							t_character **p);
+int						create_special_variable_token(t_token **h, t_token **t,
+							t_character **p);
+int						create_dollar_literal(t_token **h, t_token **t,
+							t_character **p);
+int						create_single_dollar_literal(t_token **h, t_token **t,
+							t_character **p);
+int						create_dollar_quoted_token(t_token **h, t_token **t,
+							t_character **p);
 
+int						same_word(t_character *a, t_character *b);
+t_token					*new_token(t_type type, size_t len);
+void					append_token(t_token **head, t_token **tail,
+							t_token *node);
+int						create_normal_token(t_token **h, t_token **t,
+							t_character **p);
+int						create_operator_token(t_token **h, t_token **t,
+							t_character **p);
 
-int same_word(t_character *a, t_character *b);
-t_token *new_token(t_type type, size_t len);
-void append_token(t_token **head, t_token **tail, t_token *node);
-int create_normal_token(t_token **h, t_token **t, t_character **p);
-int create_operator_token(t_token **h, t_token **t, t_character **p);
-
-// t_token					*init_node(t_token **head, t_token **tail, t_character *char_list,
-	// 		t_type current_type, int current_word);
-
-	// init.c
-	t_command *create_new_command(void);
+// init.c
+t_command				*create_new_command(void);
 t_command				*init_struct_globale(t_token *token_list, char **line);
 
-int	parse_token(t_token *token_list);
+int						parse_token(t_token *token_list);
 
 // utils.c
 void					*lst_last_node(void *head);
@@ -174,6 +175,8 @@ int						is_redir(t_type type);
 int						is_operator(t_type type);
 int						is_command(t_type_cmd type);
 t_type_cmd				identify_builtin(const char *str);
+void					add_redir_to_tail(t_redir **head, t_redir **tail,
+							t_redir *new_node);
 
 // free.c
 void					cleanup(t_command *cmd);
@@ -181,7 +184,7 @@ void					cleanall_exit(t_command *cmd, t_token *token_list,
 							char **line);
 
 // cmd.c
-int	save_all(t_command *cmd, t_token *token_list, char **line);
-
+int						save_all(t_command *cmd, t_token *token_list,
+							char **line);
 
 #endif

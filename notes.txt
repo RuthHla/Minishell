@@ -1,20 +1,20 @@
 
 Gestion des erreurs :
-1. Pipes
-Pipe en début : | ls → erreur.
-Pipe en fin : ls | → erreur.
-Pipes consécutifs sans commande au milieu : ls || wc → erreur.
-2. Redirections
-Redirection sans cible : ls > ou cat <.
-Redirection suivie d’un opérateur invalide : ls > | wc.
-Plusieurs redirections à la suite sans mot entre : ls > > out (bash dit syntax error near unexpected token '>').
-3. Heredoc
-<< sans délimiteur : cat << → erreur.
-<< suivi d’un opérateur au lieu d’un mot : cat << | wc → erreur.
-4. Mots vides (selon ton design)
+
+
+1. Append / HEREDOC / > peuvent commencer en debut de ligne -> il faut une target 
+   < peut commencer si chemin targe valide
+>> suivi d’un opérateur ou rien au lieu d’un mot : "cat << |" "cat << "  → erreur (a veriifier).
+NE pas traier redir et << >> pareil car ??
+2. Mots vides
 Exemple : echo "" → c’est valide (argument vide).
 Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
-5. Enlever le traitement du & -> enregistrer en tant que LITERAL
+3. Enlever le traitement du & -> enregistrer en tant que LITERAL
+4. Remplacer les variables par les chemins (aller chercher varibale d'environnement)
+5. Si une commande NOT_BUILTIN et commande autre que demande par le sujet 
+-> return "bash: %s: command not found"
+6. Nettoyer minishell.h des fonctions inutilisees
+
 
 AFFICHER LES ERREURS SUR LA STDERR (fprintf)
 ATTENTION :
@@ -107,3 +107,29 @@ char   *tgetstr(const char *id, char **area);                 // lit une séquen
 char   *tgoto(const char *cap, int col, int row);             // génère la séquence de positionnement
 int     tputs(const char *str, int affcnt, int (*putc)(int)); // affiche `str` via `putc`
                                      
+
+1- “NE pas traiter redir et << >> pareil car ??”
+Parce que :
+
+>/>>/< consomment un seul mot (fichier) puis s’arrêtent.
+
+<< déclenche une lecture multi-ligne jusqu’au délimiteur, avec règles d’expansion différentes selon que le délimiteur est quoté ou non.
+Implémentation : ton parseur doit avoir un chemin spécifique pour << (stockage du “limiter”, collecte des lignes, gestion des quotes du limiter, éventuel contrôle-C qui doit annuler le heredoc, fichiers temporaires, etc.).
+
+2- “Append / HEREDOC / > peuvent commencer en début de ligne -> il faut une target”
+✅ Oui. Début de ligne autorisé. Il faut immédiatement un mot cible (fichier pour >/>>, délimiteur pour <<).
+Ex. valides :
+
+>>log echo ok
+
+<<EOF cat (puis lignes, puis EOF)
+
+>out (seul)
+
+“< peut commencer si chemin target valide”
+✅ Oui. < input au début est valide ; échoue si input est introuvable.
+Ex. :
+
+<input cat ⟶ comme cat <input
+
+<input (seul) ⟶ ouvre/ferme ; échec si le fichier n’existe pas.
