@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:36:20 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 18:33:40 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/02 09:45:34 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static int	add_redir(t_token **token_list, t_command **current)
 	return (1);
 }
 
-int	handle_pipe(t_token **token_list, t_command **current)
+static int	handle_pipe(t_token **token_list, t_command **current)
 {
 	t_command	*new_node;
 

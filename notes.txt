@@ -1,7 +1,6 @@
 
 Parser :
 
-0. Nouvelle srtucture t_command garantissant le bon ordre des tokens
 1. Append / HEREDOC / > peuvent commencer en debut de ligne -> il faut une target 
    < peut commencer si chemin targe valide
 >> suivi d’un opérateur ou rien au lieu d’un mot : "cat << |" "cat << "  → erreur (a veriifier).

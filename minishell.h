@@ -124,15 +124,18 @@ typedef struct s_charbuilder
 	t_build_state		state;
 }						t_charbuilder;
 
-// Utils
+// Lexer / utils
 int						ft_isspace(char c);
 t_ctx					get_ctx_type(char c);
 t_type					get_character_type(char c);
 int						handle_quote_context(char c, t_ctx *current_context);
+void					free_character_list(t_character *head);
 
-// Norme functions
-// int						append_token(t_token **head, t_token **current,
-// 							t_token *new_token);
+// Lexer / char
+t_type					get_character_type(char c);
+t_character				*build_char_list(char *line);
+
+// Tokenizer / dollar
 t_token					*create_token_from_chars(t_character *chars,
 							int word_id);
 t_character				*add_char_node(t_charbuilder *b, char c, int type,
@@ -141,23 +144,21 @@ int						handle_quote(const char **str, t_charbuilder *b);
 int						handle_non_space(const char **str, t_charbuilder *b);
 int						handle_char(const char **str, t_charbuilder *b);
 
-// Character functions
-t_type					get_character_type(char c);
-void					free_character_list(t_character *head);
-t_character				*build_char_list(char *line);
-
 // Token functions
 char					*build_token_string(t_character *chars, int len);
 t_type					get_operator_token_type(t_character *chars);
 t_token					*convert_to_tokens(t_character *chars);
 
-t_token					*build_token_list(t_character *char_list);
-
 // tokenizer -> Utils.c
 void					free_token_list(t_token *head);
 int						valid_variable_char(char c);
 int						is_operator_char(char c);
+int						same_word(t_character *a, t_character *b);
+t_token					*new_token(t_type type, size_t len);
+void					append_token(t_token **head, t_token **tail,
+							t_token *node);
 
+// tokenizer / dollar.c
 int						create_variable_token(t_token **h, t_token **t,
 							t_character **p);
 int						create_special_variable_token(t_token **h, t_token **t,
@@ -169,19 +170,19 @@ int						create_single_dollar_literal(t_token **h, t_token **t,
 int						create_dollar_quoted_token(t_token **h, t_token **t,
 							t_character **p);
 
-int						same_word(t_character *a, t_character *b);
-t_token					*new_token(t_type type, size_t len);
-void					append_token(t_token **head, t_token **tail,
-							t_token *node);
+// tokenizer / tokenize.c
 int						create_normal_token(t_token **h, t_token **t,
 							t_character **p);
 int						create_operator_token(t_token **h, t_token **t,
 							t_character **p);
+t_token					*build_token_list(t_character *char_list);
+
 
 // init.c
 t_command				*create_new_command(void);
 t_command				*init_struct_globale(t_token *token_list, char **line);
 
+// Parser / parse_token.c
 int						parse_token(t_token *token_list);
 
 // utils.c

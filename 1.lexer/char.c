@@ -6,23 +6,11 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:00 by alandel           #+#    #+#             */
-/*   Updated: 2025/08/28 11:14:50 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/02 08:59:49 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	free_character_list(t_character *head)
-{
-	t_character	*tmp;
-
-	while (head)
-	{
-		tmp = head->next;
-		free(head);
-		head = tmp;
-	}
-}
 
 static t_character	*init_node(char ch, t_ctx context, int count_word,
 		t_character *tail)
@@ -48,7 +36,7 @@ static t_character	*init_node(char ch, t_ctx context, int count_word,
 	return (node);
 }
 
-int	check_oprhan_quote(t_character *head, t_ctx current_context)
+static int	check_oprhan_quote(t_character *head, t_ctx current_context)
 {
 	if (current_context != NONE)
 	{

@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:07 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 16:35:00 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/02 08:59:58 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,16 @@ int	handle_quote_context(char c, t_ctx *current_context)
 		}
 	}
 	return (0);
+}
+
+void	free_character_list(t_character *head)
+{
+	t_character	*tmp;
+
+	while (head)
+	{
+		tmp = head->next;
+		free(head);
+		head = tmp;
+	}
 }
