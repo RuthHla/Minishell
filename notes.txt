@@ -17,6 +17,18 @@ ATTENTION :
 afficher les erreurs sur la stderr (fprintf)
 Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
 
+GESTION DE L'ENV :
+si-> env -i ./minishell
+Enregistrer variable critique pour le projet cest a dire
+-path  / Trouver (ls, cat...)
+-pwd   / Construire builtins pwd et navigation cd
+-home  / Construire builtin cd
+-USER  / Expansion $USER
+-shlvl / Compteur de niveau de SHLVL
+
+faire un .0 avec init_environnement + propre .h rattache a minishell.h
+
+
 GESTION DES SIGNAUX :
 - s'occuper que du mode interactif (en attente de commande comme le demande le sujet)
 CTRL + C --> sur prompt en att de cmd, nouveau prompt / pendant cmd, tue la commande (brutalement renvoie SIGINT)
