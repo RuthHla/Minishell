@@ -1,28 +1,27 @@
 
-Parser :
+A FAIRE :
 
-1. Gerer redirections, heredox, Append
->  cree un fihciuer ou ecrase si deja existant
-<  fichier doit deja exister
->> cree ou ajoute si fichier deja existant
-<< juste besoin d'un LITERAL en target 
-  
-NE pas traier redir et << >> pareil car ??
-
-2. Mots vides
+Amaury --> Redir, Pipe et commande + NOT_BUILTIN
+Arthur --> environnement, expandre variable, gestion des signaux 
+. Mots vides
 Exemple : echo "" → c’est valide (argument vide).
 Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
-3. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
-4. Remplacer les variables par les chemins (aller chercher varibale d'environnement)
-5. Si une commande NOT_BUILTIN et commande autre que demande par le sujet 
--> return "bash: %s: command not found"
-6. Nettoyer minishell.h des fonctions inutilisees
-7. prendre en compte le env -i
+
+. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
+
+. prendre en compte le env -i
 
 
-AFFICHER LES ERREURS SUR LA STDERR (fprintf)
+ATTENTION :
 
+afficher les erreurs sur la stderr (fprintf)
 Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
+
+GESTION DES SIGNAUX :
+- s'occuper que du mode interactif (en attente de commande comme le demande le sujet)
+CTRL + C --> sur prompt en att de cmd, nouveau prompt / pendant cmd, tue la commande (brutalement renvoie SIGINT)
+CTRL + D --> sur prompt en att de cmd, quitte le shell / pendant cmd, renvoie EOF ce qui a pur effet de stopper certaine cmd en cours (exemple heredoc) mais ne fait rien sur un sleep 10 par ex
+et cela pcq ctrl+D ferme stdin
 
 
 

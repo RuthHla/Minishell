@@ -18,6 +18,8 @@
 # include <termios.h>
 # include <unistd.h>
 
+int						g_signal;
+
 typedef enum e_type
 {
 	LITERAL,
@@ -99,7 +101,6 @@ typedef struct s_element
 	struct s_element	*next;
 }						t_element;
 
-// changer pour savoir ce qui arrive en premier entre la redirection et les
 typedef struct s_command
 {
 	t_type_cmd			cmd;
@@ -176,7 +177,6 @@ int						create_normal_token(t_token **h, t_token **t,
 int						create_operator_token(t_token **h, t_token **t,
 							t_character **p);
 t_token					*build_token_list(t_character *char_list);
-
 
 // init.c
 t_command				*create_new_command(void);

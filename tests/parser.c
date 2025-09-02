@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-/* Pour affichage debug */
 static const char	*get_type_name(t_type type)
 {
 	if (type == LITERAL)
@@ -47,34 +46,6 @@ void	print_tokens(t_token *token_list)
 		printf("Token: '%s' [Type: %s]\n", token_list->str,
 			get_type_name(token_list->type));
 }
-
-// refaire avec nouvelle structure pour que ce oit dans lordre
-// void print_command_structure(t_command *cmd_list)
-// {
-// 	while (cmd_list)
-// 	{
-// 		printf("(cmd)[%s]\n", get_cmd_name(cmd_list->cmd));
-// 		for (size_t i = 0; i < cmd_list->nb_args; i++)
-// 			printf("    (args)[%s] -> %s\n",
-// 				get_type_name(cmd_list->args[i].type),
-// 				cmd_list->args[i].str);
-// 		for (t_redir *r = cmd_list->redirs; r; r = r->next)
-// 		{
-// 			printf("    (redir)[%s]\n", get_type_name(r->type));
-// 			if (r->target)
-// 				printf("        (target)[%s] -> %s\n",
-// get_type_name(r->target_type), r->target);
-// 			else
-// 				printf("        (target)[UNKNOWN]\n");
-// 		}
-// 		if (cmd_list->has_pipe_out)
-// 			printf("    [PIPE] -> |\n");
-// 		printf("\n");
-// 		cmd_list = cmd_list->next;
-// 	}
-// }
-
-#include "minishell.h"
 
 void	print_command_structure(t_command *cmd_list)
 {
