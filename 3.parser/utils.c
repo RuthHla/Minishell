@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:36:06 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 18:25:59 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/02 10:48:22 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,10 @@ t_element	*create_element_redir(t_type type, const char *target,
 	t_element	*element;
 	t_redir		*redir;
 
-	redir = create_redir(type, target, target_type);
+	if (type == HEREDOC && target_type == DOLLAR)
+		redir = create_redir(type, target, LITERAL);
+	else
+		redir = create_redir(type, target, target_type);
 	if (!redir)
 		return (NULL);
 	element = malloc(sizeof(t_element));

@@ -1,10 +1,14 @@
 
 Parser :
 
-1. Append / HEREDOC / > peuvent commencer en debut de ligne -> il faut une target 
-   < peut commencer si chemin targe valide
->> suivi d’un opérateur ou rien au lieu d’un mot : "cat << |" "cat << "  → erreur (a veriifier).
+1. Gerer redirections, heredox, Append
+>  cree un fihciuer ou ecrase si deja existant
+<  fichier doit deja exister
+>> cree ou ajoute si fichier deja existant
+<< juste besoin d'un LITERAL en target 
+  
 NE pas traier redir et << >> pareil car ??
+
 2. Mots vides
 Exemple : echo "" → c’est valide (argument vide).
 Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
@@ -13,6 +17,7 @@ Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
 5. Si une commande NOT_BUILTIN et commande autre que demande par le sujet 
 -> return "bash: %s: command not found"
 6. Nettoyer minishell.h des fonctions inutilisees
+7. prendre en compte le env -i
 
 
 AFFICHER LES ERREURS SUR LA STDERR (fprintf)
