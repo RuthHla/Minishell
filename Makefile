@@ -2,6 +2,7 @@ NAME       := minishell
 NAME_LEX   := test_lexer
 NAME_TOK   := test_tokenizer
 NAME_PAR   := test_parser
+NAME_EXP   := test_expander
 
 CC         := cc
 CFLAGS     := -Wall -Wextra -Werror -MMD -MP -I.
@@ -10,23 +11,27 @@ LDFLAGS    := -lreadline
 SRC_LEXER      := 1.lexer/char.c 1.lexer/utils.c
 SRC_TOKENIZER  := 2.tokenizer/tokenize.c 2.tokenizer/utils.c 2.tokenizer/dollar.c
 SRC_PARSER     := 3.parser/init.c 3.parser/free.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c
+SRC_EXPANDER   := 0.env/env.c 4.expander/expander.c
 
 SRC_MINISHELL  := minishell.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
 SRC_TEST_LEX   := tests/lexer.c $(SRC_LEXER)
 SRC_TEST_TOK   := tests/tokenizer.c $(SRC_LEXER) $(SRC_TOKENIZER)
 SRC_TEST_PAR   := tests/parser.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
+SRC_TEST_EXP := tests/test_expander.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER) $(SRC_EXPANDER)
 
 OBJDIR      := obj
 OBJDIR_MINI := $(OBJDIR)/minishell
 OBJDIR_TLEX := $(OBJDIR)/test_lexer
 OBJDIR_TTOK := $(OBJDIR)/test_tokenizer
 OBJDIR_TPAR := $(OBJDIR)/test_parser
+OBJDIR_TEXP := $(OBJDIR)/test_expander
 
 OBJS_MINI := $(SRC_MINISHELL:%.c=$(OBJDIR_MINI)/%.o)
 OBJS_TLEX := $(SRC_TEST_LEX:%.c=$(OBJDIR_TLEX)/%.o)
 OBJS_TTOK := $(SRC_TEST_TOK:%.c=$(OBJDIR_TTOK)/%.o)
 OBJS_TPAR := $(SRC_TEST_PAR:%.c=$(OBJDIR_TPAR)/%.o)
-DEPS := $(OBJS_MINI:.o=.d) $(OBJS_TLEX:.o=.d) $(OBJS_TTOK:.o=.d) $(OBJS_TPAR:.o=.d)
+OBJS_TEXP := $(SRC_TEST_EXP:%.c=$(OBJDIR_TEXP)/%.o)
+DEPS := $(OBJS_MINI:.o=.d) $(OBJS_TLEX:.o=.d) $(OBJS_TTOK:.o=.d) $(OBJS_TPAR:.o=.d) $(OBJS_TEXP:.o=.d)
 
 .PHONY: all clean fclean re test-lexer test-tokenizer test-parser
 all: $(NAME)
@@ -46,6 +51,10 @@ test-parser: $(NAME_PAR)
 $(NAME_PAR): $(OBJS_TPAR)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
+test-expander: $(NAME_EXP)
+$(NAME_EXP): $(OBJS_TEXP)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
 $(OBJDIR_MINI)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -56,6 +65,9 @@ $(OBJDIR_TTOK)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 $(OBJDIR_TPAR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR_TEXP)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 

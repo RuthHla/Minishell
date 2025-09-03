@@ -6,28 +6,45 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 14:02:17 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/02 15:04:27 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/03 12:04:28 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "env.h"
 
-
-
-int	main(char **env)
+char	**init_local_env(void)
 {
-	t_env *env;
+	char	**env;
 
-	env = malloc(sizeof(t_env) * 4);
+	env = malloc(sizeof(char *) * 6);
 	if (!env)
-		return (0);
+		return (NULL);
+	env[0] = strdup("USER=alandel");
+	env[1] = strdup("HOME=/home/alandel");
+	env[2] = strdup("SHLVL=1");
+	env[3] = strdup("PATH=/usr/bin:/bin");
+	env[4] = strdup("PWD=/home/alandel");
+	env[5] = NULL;
+	return (env);
+}
 
-	if(!env[0])
+char	**copy_env(char **envp)
+{
+	int		i;
+	char	**new_env;
 
-	else
-		env->env = env;
-	if (path)
-		init_env(env);
-	else
-		init_local_env(env);
+	i = 0;
+	while (envp && envp[i])
+		i++;
+	new_env = malloc(sizeof(char *) * (i + 1));
+	if (!new_env)
+		return (NULL);
+	i = 0;
+	while (envp && envp[i])
+	{
+		new_env[i] = strdup(envp[i]);
+		i++;
+	}
+	new_env[i] = NULL;
+	return (new_env);
 }

@@ -1,21 +1,20 @@
 
-A FAIRE :
+# **A FAIRE :
 
 Amaury --> Redir, Pipe et commande + NOT_BUILTIN
 Arthur --> environnement, expandre variable, gestion des signaux 
-. Mots vides
-Exemple : echo "" → c’est valide (argument vide).
-Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
-
-. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
-
-. prendre en compte le env -i
-
 
 ATTENTION :
 
 afficher les erreurs sur la stderr (fprintf)
 Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
+. Mots vides
+    Exemple : echo "" → c’est valide (argument vide).
+Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
+
+. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
+
+. prendre en compte le env -i
 
 GESTION DE L'ENV :
 si-> env -i ./minishell
@@ -121,29 +120,3 @@ char   *tgetstr(const char *id, char **area);                 // lit une séquen
 char   *tgoto(const char *cap, int col, int row);             // génère la séquence de positionnement
 int     tputs(const char *str, int affcnt, int (*putc)(int)); // affiche `str` via `putc`
                                      
-
-1- “NE pas traiter redir et << >> pareil car ??”
-Parce que :
-
->/>>/< consomment un seul mot (fichier) puis s’arrêtent.
-
-<< déclenche une lecture multi-ligne jusqu’au délimiteur, avec règles d’expansion différentes selon que le délimiteur est quoté ou non.
-Implémentation : ton parseur doit avoir un chemin spécifique pour << (stockage du “limiter”, collecte des lignes, gestion des quotes du limiter, éventuel contrôle-C qui doit annuler le heredoc, fichiers temporaires, etc.).
-
-2- “Append / HEREDOC / > peuvent commencer en début de ligne -> il faut une target”
-✅ Oui. Début de ligne autorisé. Il faut immédiatement un mot cible (fichier pour >/>>, délimiteur pour <<).
-Ex. valides :
-
->>log echo ok
-
-<<EOF cat (puis lignes, puis EOF)
-
->out (seul)
-
-“< peut commencer si chemin target valide”
-✅ Oui. < input au début est valide ; échoue si input est introuvable.
-Ex. :
-
-<input cat ⟶ comme cat <input
-
-<input (seul) ⟶ ouvre/ferme ; échec si le fichier n’existe pas.

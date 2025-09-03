@@ -124,7 +124,6 @@ int create_operator_token(t_token **h, t_token **t, t_character **p)
     return (1);
 }
 
-
 t_token	*build_token_list(t_character *char_list)
 {
 	t_token		*head;

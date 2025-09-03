@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:35:52 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 12:32:52 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/03 16:18:52 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	check_redir(t_token *token_list)
 				"bash: syntax error near unexpected token `newline'\n");
 			return (0);
 		}
-		if (!(target->type == LITERAL || target->type == DOLLAR))
+		if (!(target->type == LITERAL || target->type == DOLLAR || target->type == SPECIAL_VARIABLE))
 		{
 			if (target->str && target->str[0])
 				fprintf(stderr,

@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 14:16:04 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/02 14:25:39 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/03 15:53:27 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,7 @@
 # define ENV_H
 # include "../minishell.h"
 
-typedef struct s_env
-{
-	char	**env;
-	int		last_exit; //pour $?
-}			t_env;
+char	**init_local_env(void);
+char	**copy_env(char **envp);
 
 #endif
