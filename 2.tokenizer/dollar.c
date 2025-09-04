@@ -1,7 +1,6 @@
 #include "../minishell.h"
 
 // IMPORTANT -> securiser les fonctions
-
 int	create_variable_token(t_token **head, t_token **tail,
 		t_character **char_list)
 {

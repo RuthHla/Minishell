@@ -98,13 +98,14 @@ int create_operator_token(t_token **h, t_token **t, t_character **p)
     n = (c ? c->next : NULL);
     type = UNKNOWN;
     len = 1;
-    if (c->c == '|') type = PIPE;
-    else if (c->c == '<')
+    if (c->type == PIPE) 
+		type = PIPE;
+    else if (c->type == REDIR_IN)
     {
         if (n && same_word(c, n) && n->c == '<') { type = HEREDOC; len = 2; }
         else type = REDIR_IN;
     }
-    else if (c->c == '>')
+    else if (c->c == REDIR_OUT)
     {
         if (n && same_word(c, n) && n->c == '>') { type = APPEND; len = 2; }
         else type = REDIR_OUT;
@@ -165,3 +166,31 @@ t_token	*build_token_list(t_character *char_list)
 	}
 	return (head);
 }
+
+// t_token *build_token_list(t_character *char_list)
+// {
+//     t_token *head = NULL;
+//     t_token *tail = NULL;
+    
+//     while (char_list)
+//     {
+//         t_character *start = char_list;
+        
+//         // Si on est dans un contexte quote double, regarder si dans le meme mot un $
+// 		// si oui creer token_variable enregistrer jusqua fin du mot
+//         if (start->context != NONE)
+//         {
+//             if (!create_quoted_token(&head, &tail, &char_list))
+//                 return (free_token_list(head), NULL);
+//         }
+//         // Sinon, token normale pour les tokens hors quotes / enregistrer par type tant que le meme type
+// 		// a verifier
+//         else
+//         {
+//             // Ton code actuel pour les opérateurs et tokens normaux
+//             // ...
+//         }
+//     }
+    
+//     return head;
+// }

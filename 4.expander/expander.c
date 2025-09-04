@@ -41,7 +41,6 @@ char *itoa(int value, char *str, int base)
     return rc;
 }
 
-
 static char	*find_variable(char **env, char *variable)
 {
 	int	i;
@@ -78,21 +77,25 @@ static char	*expand_arg_variable(t_shell shell, t_arg variable, t_type type)
 	return (str);
 }
 
-// static char	*expand_redir_variable(t_shell shell, t_redir variable, t_type type)
-// {
-// 	char	*str = NULL;
+static char	*expand_redir_variable(t_shell shell, t_redir variable, t_type type)
+{
+	char	*str = NULL;
+	char	buffer[12];
 
-// 	if(type == SPECIAL_VARIABLE)
-// 		itoa(shell.last_exit, str, 10); // attention : allouer str
-// 	else
-// 		str = find_variable(shell.env, variable.str);
+	if(type == SPECIAL_VARIABLE)
+	{
+		itoa(shell.last_exit, buffer, 10);
+		str = strdup(buffer);
+	}
+	else
+		str = find_variable(shell.env, variable.target);
 
-// 	if (!str)
-// 		str = strdup(""); // verifeir
-// 	else
-// 		strdup(str);
-// 	return (str);
-// }
+	if (!str)
+		str = strdup(""); // verifeir
+	else
+		strdup(str);
+	return (str);
+}
 
 void	expander(t_command **cmd_list, t_shell *shell)
 {
@@ -116,17 +119,17 @@ void	expander(t_command **cmd_list, t_shell *shell)
 							*element->u_.arg, element->u_.arg->type);
 					free(old_str);
 				}
-			// }
-			// else if (element->kind == REDIR)
-			// {
-			// 	if (element->u_.redirs->target_type == DOLLAR
-			// 		|| element->u_.redirs->target_type == SPECIAL_VARIABLE)
-			// 	{
-			// 		old_str = element->u_.arg->str;
-			// 		element->u_.arg->str = expand_arg_variable(*shell,
-			// 				*element->u_.arg, element->u_.redirs->type);
-			// 		free(old_str);
-			// 	}
+			}
+			else if (element->kind == REDIR)
+			{
+				if (element->u_.redirs->target_type == DOLLAR
+					|| element->u_.redirs->target_type == SPECIAL_VARIABLE)
+				{
+					old_str = element->u_.redirs->target;
+					element->u_.redirs->target = expand_redir_variable(*shell,
+							*element->u_.redirs, element->u_.redirs->target_type);
+					free(old_str);
+				}
 			 }
 			element = element->next;
 		}

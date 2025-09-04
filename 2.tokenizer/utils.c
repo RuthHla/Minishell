@@ -22,13 +22,6 @@ void	free_token_list(t_token *head)
 	}
 }
 
-int	is_operator_char(char c)
-{
-	if (c == '|' || c == '&' || c == '<' || c == '>')
-		return (1);
-	return (0);
-}
-
 int	same_word(t_character *a, t_character *b)
 {
 	if (!a || !b)

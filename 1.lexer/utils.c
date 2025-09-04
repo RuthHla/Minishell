@@ -10,6 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+// 1. Un caractère blanc (IFS) en dehors des quotes
+// 2. Un opérateur
+// 3. La fin d'un opérateur
+// 4. Un quote non échappé qui ouvre/ferme
+
 #include "../minishell.h"
 
 int	ft_isspace(char c)
@@ -77,4 +82,11 @@ void	free_character_list(t_character *head)
 		free(head);
 		head = tmp;
 	}
+}
+
+int	is_operator_char(char c)
+{
+	if (c == '|' || c == '&' || c == '<' || c == '>')
+		return (1);
+	return (0);
 }
