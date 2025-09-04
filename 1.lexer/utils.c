@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:07 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/02 08:59:58 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/04 10:02:39 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	free_character_list(t_character *head)
 
 int	is_operator_char(char c)
 {
-	if (c == '|' || c == '&' || c == '<' || c == '>')
+	if (c == '|' || c == '<' || c == '>')
 		return (1);
 	return (0);
 }

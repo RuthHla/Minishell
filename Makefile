@@ -9,9 +9,9 @@ CFLAGS     := -Wall -Wextra -Werror -MMD -MP -I.
 LDFLAGS    := -lreadline
 
 SRC_LEXER      := 1.lexer/char.c 1.lexer/utils.c
-SRC_TOKENIZER  := 2.tokenizer/tokenize.c 2.tokenizer/utils.c 2.tokenizer/dollar.c
+SRC_TOKENIZER  := 2.tokenizer/tokenize.c 2.tokenizer/utils.c
 SRC_PARSER     := 3.parser/init.c 3.parser/free.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c
-SRC_EXPANDER   := 0.env/env.c 4.expander/expander.c
+SRC_EXPANDER   := 0.env/env.c 4.expander/expander.c 4.expander/utils.c
 
 SRC_MINISHELL  := minishell.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
 SRC_TEST_LEX   := tests/lexer.c $(SRC_LEXER)

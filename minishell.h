@@ -18,6 +18,8 @@
 # include <termios.h>
 # include <unistd.h>
 # include "0.env/env.h"
+# include "4.expander/expander.h"
+
 
 // int						g_signal;
 
@@ -146,18 +148,6 @@ int						same_word(t_character *a, t_character *b);
 t_token					*new_token(t_type type, size_t len);
 void					append_token(t_token **head, t_token **tail,
 							t_token *node);
-
-// tokenizer / dollar.c
-int						create_variable_token(t_token **h, t_token **t,
-							t_character **p);
-int						create_special_variable_token(t_token **h, t_token **t,
-							t_character **p);
-int						create_dollar_literal(t_token **h, t_token **t,
-							t_character **p);
-int						create_single_dollar_literal(t_token **h, t_token **t,
-							t_character **p);
-int						create_dollar_quoted_token(t_token **h, t_token **t,
-							t_character **p);
 
 // tokenizer / tokenize.c
 int						create_normal_token(t_token **h, t_token **t,

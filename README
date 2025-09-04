@@ -3,11 +3,13 @@
 
 Amaury --> Redir, Pipe et commande + NOT_BUILTIN
 Arthur --> environnement OK, expandre variable, gestion des signaux 
-modifier : 2.tokenizer(1 seul token si variable collee) 3.expander(redir) 4.parser(rajout check chemin valide)
-                        donc flag + modif facon dexpanser
-Tokenizer -> $"oui"sal / echo"$USER" / oui$$ --> 1 seul token exigé  
-ATTENTION :
+modifier : lexer et tokenizer pour avoir 1seul token dans le cas dune variable au milieu dun word
 
+
+bash-5.1$ echo $"USER"
+USER
+bash-5.1$ echo $'USER'
+USER
 afficher les erreurs sur la stderr (fprintf)
 Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
 . Mots vides
