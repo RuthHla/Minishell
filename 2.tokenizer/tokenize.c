@@ -51,7 +51,6 @@ static int	word_has_expandable_dollar(t_character *word_start)
 	{
 		if (is_expandable_dollar(current))
 		{
-			// Vérifier que ce n'est pas $? (qui est une variable spéciale)
 			next = current->next;
 			if (next && next->c != '?')
 				return (1);
@@ -73,7 +72,6 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	word_start = *char_list;
 	current = word_start;
 	len = 0;
-	// Calcule la longueur du mot entier
 	while (current && same_word(word_start, current)
 		&& !is_operator_char(current->c))
 	{
@@ -82,17 +80,14 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	}
 	if (len == 0)
 		return (1);
-	// Détermine le type du token avec priorité : SPECIAL_VARIABLE > DOLLAR > LITERAL
 	token_type = LITERAL;
 	if (word_has_special_variable(word_start))
 		token_type = SPECIAL_VARIABLE;
 	else if (word_has_expandable_dollar(word_start))
 		token_type = DOLLAR;
-	// Crée le token
 	tok = new_token(token_type, len);
 	if (!tok)
 		return (0);
-	// Remplit le token avec le contenu du mot
 	current = word_start;
 	i = 0;
 	while (i < len && current)

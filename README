@@ -6,10 +6,6 @@ Arthur --> environnement OK, expandre variable, gestion des signaux
 modifier : lexer et tokenizer pour avoir 1seul token dans le cas dune variable au milieu dun word
 
 
-bash-5.1$ echo $"USER"
-USER
-bash-5.1$ echo $'USER'
-USER
 afficher les erreurs sur la stderr (fprintf)
 Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
 . Mots vides
@@ -17,8 +13,6 @@ Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé
 Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
 
 . Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
-
-. prendre en compte le env -i
 
 GESTION DE L'ENV :
 si-> env -i ./minishell
@@ -38,89 +32,16 @@ CTRL + C --> sur prompt en att de cmd, nouveau prompt / pendant cmd, tue la comm
 CTRL + D --> sur prompt en att de cmd, quitte le shell / pendant cmd, renvoie EOF ce qui a pur effet de stopper certaine cmd en cours (exemple heredoc) mais ne fait rien sur un sleep 10 par ex
 et cela pcq ctrl+D ferme stdin
 
+Arthur_part -> gerer les cas suivants et cest good
 
+expansion applique malgre quote au sein du token -> enregistrer le contexte de quote depuis tokenizer
 
+minishell$ echo $"USER"
+(cmd)[echo]
+    (arg)[LITERAL] -> $USER
+attendu :     (arg)[LITERAL] -> USER
 
-// <!-- Prototype + definition des fonctions autorisees : -->
-
-<!-- 1. GNU Readline -->
-char   *readline(const char *prompt);                               // lit une ligne (sans '\n') et renvoie un buffer alloué ou NULL
-int     add_history(const char *string);                            // ajoute `string` à l’historique (0 = succès)
-void    rl_clear_history(void);                                     // vide l’historique (via stub sur macOS)
-int     rl_on_new_line(void);                                       // informe d’un retour à la ligne (0 = succès)
-void    rl_replace_line(const char *text, int clear_undo);          // remplace la ligne courante, clear_undo != 0 efface la pile d’undo
-int     rl_redisplay(void);                                         // redessine la ligne courante (0 = succès)
-
-<!-- 2. Mémoire & I/O de base -->
-int     printf(const char *format, ...);                     // écrit formaté sur stdout, renvoie nb de caractères ou <0
-void   *malloc(size_t size);                                 // alloue `size` octets, renvoie pointeur ou NULL
-void    free(void *ptr);                                     // libère un bloc alloué
-ssize_t write(int fd, const void *buf, size_t count);        // écrit jusqu’à `count` octets sur `fd`, renvoie nb écrits ou -1
-
-<!-- 3. Fichiers & accès -->
-int     access(const char *pathname, int mode);                     // teste R_OK/W_OK/X_OK/F_OK (0 = autorisé)
-int     open(const char *pathname, int flags, mode_t mode);         // ouvre/crée un fichier, renvoie fd ≥0 ou -1
-ssize_t read(int fd, void *buf, size_t count);                      // lit jusqu’à `count` octets de `fd`, renvoie nb lus ou -1
-int     close(int fd);                                              // ferme le descripteur `fd` (0 = succès)
-
-<!-- 4. Processus & exécution -->
-pid_t   fork(void);                                                           // clone le processus (0 dans le fils, PID dans le père)
-pid_t   wait(int *wstatus);                                                   // attend un fils terminé, renvoie PID ou -1
-pid_t   waitpid(pid_t pid, int *wstatus, int options);                        // idem pour un PID spécifique (0, PID ou -1)
-pid_t   wait3(int *wstatus, int options, struct rusage *rusage);               // wait + collecte de stats, renvoie PID ou -1
-pid_t   wait4(pid_t pid, int *wstatus, int options, struct rusage *rusage);    // waitpid + stats
-int     execve(const char *pathname, char *const argv[], char *const envp[]);   // remplace le processus (ne revient pas si OK)
-
-<!-- 5. Signaux -->
-void   (*signal(int signum, void (*handler)(int)))(int);                                // installe un handler, renvoie l’ancien ou SIG_ERR
-int     sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);   // POSIX, 0 = succès
-int     sigemptyset(sigset_t *set);                                                     // initialise `set` vide (0 = succès)
-int     sigaddset(sigset_t *set, int signum);                                           // ajoute `signum` à `set` (0 = succès)
-int     kill(pid_t pid, int sig);                                                       // envoie `sig` à `pid` (0 = succès)
-
-<!-- 6. Terminaison -->
-_Noreturn_ void exit(int status);  // termine le processus avec code `status`
-
-<!-- 7. Répertoires & métadonnées -->
-char   *getcwd(char *buf, size_t size);                     // récupère le cwd dans `buf` ou NULL
-int     chdir(const char *path);                            // change le cwd, 0 = succès
-int     stat(const char *pathname, struct stat *statbuf);   // métadonnées, 0 = succès
-int     lstat(const char *pathname, struct stat *statbuf);  // idem sans suivre les liens
-int     fstat(int fd, struct stat *statbuf);                // métadonnées d’un fd
-int     unlink(const char *pathname);                       // supprime le fichier, 0 = succès
-
-<!-- 8. Descripteurs & tubes -->
-int     dup(int oldfd);               // duplique `oldfd`, renvoie newfd ou -1
-int     dup2(int oldfd, int newfd);   // duplique `oldfd` sur `newfd`
-int     pipe(int pipefd[2]);          // crée un tube pipefd[0]=lecture, pipefd[1]=écriture
-
-<!-- 9. Répertoires (dirent) -->
-DIR    *opendir(const char *name);           // ouvre un répertoire, renvoie DIR* ou NULL
-struct dirent *readdir(DIR *dirp);           // lit l’entrée suivante, NULL en fin
-int     closedir(DIR *dirp);                 // ferme le DIR, 0 = succès
-
-<!-- 10. Gestion d’erreur -->
-char   *strerror(int errnum);       // chaîne descriptive de `errnum`
-void    perror(const char *s);      // affiche `s: <message errno>`
-
-<!-- 11. Terminal & TTY -->
-int     isatty(int fd);                                 // 1 si `fd` est un terminal
-char   *ttyname(int fd);                                // nom du terminal ou NULL
-int     ttyslot(void);                                  // index de l’entrée utmp ou 0
-int     ioctl(int fd, unsigned long request, ...);      // contrôle du terminal, 0 = succès
-
-<!-- 12. Environnement -->
-char   *getenv(const char *name);           // valeur de `name` ou NULL
-
-<!-- 13. Termios -->
-int     tcgetattr(int fd, struct termios *termios_p);                               // lit les attributs, 0 = succès
-int     tcsetattr(int fd, int optional_actions, const struct termios *termios_p);   // fixe, 0 = succès
-
-<!-- 14. Termcap -->
-int     tgetent(char *bp, const char *name);                  // charge la base termcap (1 = succès)
-int     tgetflag(const char *id);                             // lit une capacité booléenne (-1 si absente)
-int     tgetnum(const char *id);                              // lit une capacité numérique (-1 si absente)
-char   *tgetstr(const char *id, char **area);                 // lit une séquence de contrôle ou NULL
-char   *tgoto(const char *cap, int col, int row);             // génère la séquence de positionnement
-int     tputs(const char *str, int affcnt, int (*putc)(int)); // affiche `str` via `putc`
-                                     
+minishell$ echo oui"$USER"oui
+(cmd)[echo]
+    (arg)[$] -> oui
+attendu :    (arg)[$] -> oui"$USER"oui
