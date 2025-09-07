@@ -16,7 +16,7 @@ t_command	*create_new_command(void)
 {
 	t_command	*cmd;
 
-	cmd = calloc(1, sizeof(t_command));
+	cmd = ft_calloc(1, sizeof(t_command));
 	if (!cmd)
 		return (NULL);
 	cmd->cmd = CMD_NONE;

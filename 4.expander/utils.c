@@ -53,11 +53,11 @@ char	*find_variable_in_env(char **env, char *variable)
 	int	i;
 	int	len;
 
-	len = strlen(variable);
+	len = ft_strlen(variable);
 	i = 0;
 	while (env[i])
 	{
-		if (strncmp(env[i], variable, len) == 0 && env[i][len] == '=')
+		if (ft_strncmp(env[i], variable, len) == 0 && env[i][len] == '=')
 			return (env[i] + len + 1);
 		i++;
 	}
@@ -68,7 +68,7 @@ int	how_many_variable(char *str)
 {
 	int i = 0;
 	int j = 0;
-	int len = strlen(str);
+	int len = ft_strlen(str);
 	int n_var = 0;
 
 	while (i < len)
@@ -124,7 +124,7 @@ char **find_variable_in_str(char *str)
     if (!variable)
         return (NULL);
     
-    str_len = strlen(str);
+    str_len = ft_strlen(str);
     while (i < str_len)
     {
         if (str[i] == '$' && i + 1 < str_len && (valid_variable_char(str[i + 1]) || str[i + 1] == '?'))

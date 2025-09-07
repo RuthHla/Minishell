@@ -157,6 +157,8 @@ int	main(int ac, char **av, char **envp)
 		return (0);
 
 	shell.last_exit = 0;
+	// shell.shlvl = 0;
+	// init_shell_shlvl(&shell, envp);
 	while (1)
 	{
 		line = readline("minishell$ ");

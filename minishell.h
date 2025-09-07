@@ -17,11 +17,12 @@
 # include <term.h>
 # include <termios.h>
 # include <unistd.h>
+# include "libft.h"
 # include "0.env/env.h"
 # include "4.expander/expander.h"
 
 
-// int						g_signal;
+// int 		g_signal_received = 0;
 
 typedef enum e_type
 {
@@ -118,7 +119,14 @@ typedef struct s_shell
 {
 	char	**env;
 	int		last_exit; //pour $?
+	int 	shlvl;
 }			t_shell;
+
+typedef struct s_ios
+{
+    int in_fd;   // fd ouvert pour l'entrée (stdin redirigé)
+    int out_fd;  // fd ouvert pour la sortie (stdout redirigé)
+}   t_ios;
 
 // Lexer / utils
 int						ft_isspace(char c);
@@ -189,7 +197,21 @@ int						save_all(t_command *cmd, t_token *token_list,
 int						add_cmd(t_command *cmd, char *str);
 int						add_argument(t_command *cmd, t_type type,
 							const char *str);
+// env.c 
+void    init_shell_shlvl(t_shell *shell, char **envp);
+
 // expander.c
 void					expander(t_command **cmd_list, t_shell *shell);
+
+// exec
+int   run_pipeline(t_command *cmd_list, t_shell *sh);
+
+// redic
+void close_redirs(t_ios *ios);
+int apply_redirs(const t_ios *ios);
+int collect_redirs_fds(t_element *elem, t_ios *ios);
+
+// heredoc
+int create_heredoc_fd(const char *delim);
 
 #endif

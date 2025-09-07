@@ -77,22 +77,21 @@ static int	handle_pipe(t_token **token_list, t_command **current)
 	return (0);
 }
 
+// a proteger
 static void	handle_cmd_or_arg(t_token **token_list, t_command **current,
 		char **line)
 {
-	if ((*current)->cmd == CMD_NONE)
+    t_type_cmd b;
+
+    if ((*current)->cmd == CMD_NONE) 
 	{
-		if (!add_cmd(*current, (*token_list)->str))
-			cleanall_exit(*current, (*token_list), line);
-		// pas bon car fait token_list-next juste apres
-	}
-	else
-	{
-		if (!add_argument(*current, (*token_list)->type, (*token_list)->str))
-			cleanall_exit(*current, *token_list, line);
-		// pas bon car fait token_list-next juste apres
-	}
-	*token_list = (*token_list)->next;
+        b = identify_builtin((*token_list)->str);
+        (*current)->cmd = b;
+    }
+    if (!add_argument(*current, (*token_list)->type, (*token_list)->str))
+        cleanall_exit(*current, *token_list, line);
+
+    *token_list = (*token_list)->next;
 }
 
 int	save_all(t_command *cmd, t_token *token_list, char **line)

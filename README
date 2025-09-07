@@ -1,47 +1,16 @@
 
 # **A FAIRE :
 
-Amaury --> Redir, Pipe et commande + NOT_BUILTIN
-Arthur --> environnement OK, expandre variable, gestion des signaux 
-modifier : lexer et tokenizer pour avoir 1seul token dans le cas dune variable au milieu dun word
-
-
-afficher les erreurs sur la stderr (fprintf)
-Tokenizer -> $"oui"sal  ou   oui$$ --> 1 seul token exigé  
-. Mots vides
-    Exemple : echo "" → c’est valide (argument vide).
-Donc attention à ne pas jeter les tokens de type LITERAL même si str="".
-
-. Gerer les unknowns (retourner des erreurs si caracteres non reconnu)
-
-GESTION DE L'ENV :
-si-> env -i ./minishell
-Enregistrer variable critique pour le projet cest a dire
--path  / Trouver (ls, cat...)
--pwd   / Construire builtins pwd et navigation cd
--home  / Construire builtin cd
--USER  / Expansion $USER
--shlvl / Compteur de niveau de SHLVL
-
-faire un .0 avec init_environnement + propre .h rattache a minishell.h
-
+Amaury --> BUILTIN
+Arthur --> Gestion des signaux (fin de exec.c) / 
+-remplacer fonction par libft / -> OK manque juste fprintf dans parser + adapte itoa expander
+-SHLVL -> OK
+-$? -> OK
+-ajt une option pour detecter les quotes au sein d'une variable / -> ajouter liste chainee de segment au token puis ajout de l'option a expander
+Gestion des signaux
 
 GESTION DES SIGNAUX :
 - s'occuper que du mode interactif (en attente de commande comme le demande le sujet)
 CTRL + C --> sur prompt en att de cmd, nouveau prompt / pendant cmd, tue la commande (brutalement renvoie SIGINT)
-CTRL + D --> sur prompt en att de cmd, quitte le shell / pendant cmd, renvoie EOF ce qui a pur effet de stopper certaine cmd en cours (exemple heredoc) mais ne fait rien sur un sleep 10 par ex
+CTRL + D --> sur prompt en att de cmd, quitte le shell / pendant cmd, renvoie EOF ce qui a pour effet de stopper certaine cmd en cours (exemple heredoc) mais ne fait rien sur un sleep 10 par ex
 et cela pcq ctrl+D ferme stdin
-
-Arthur_part -> gerer les cas suivants et cest good
-
-expansion applique malgre quote au sein du token -> enregistrer le contexte de quote depuis tokenizer
-
-minishell$ echo $"USER"
-(cmd)[echo]
-    (arg)[LITERAL] -> $USER
-attendu :     (arg)[LITERAL] -> USER
-
-minishell$ echo oui"$USER"oui
-(cmd)[echo]
-    (arg)[$] -> oui
-attendu :    (arg)[$] -> oui"$USER"oui

@@ -40,7 +40,6 @@ static t_var_pos *find_variables_with_positions(char *str, int *count)
             vars[index].start = i;
             j = i + 1;
             
-            // CAS SPÉCIAL: $? - capturer SEULEMENT le ?
             if (str[j] == '?')
             {
                 vars[index].name = malloc(sizeof(char) * 2);
@@ -53,11 +52,10 @@ static t_var_pos *find_variables_with_positions(char *str, int *count)
                 }
                 vars[index].name[0] = '?';
                 vars[index].name[1] = '\0';
-                vars[index].end = j + 1;  // Position juste après le ?
+                vars[index].end = j + 1;  
                 index++;
-                i = j;  // On continue après le ?
+                i = j;  
             }
-            // CAS NORMAL: Variable standard
             else
             {
                 int var_len = strlen_variable(str, j);
@@ -92,29 +90,29 @@ static char *get_variable_value(t_shell *shell, char *var_name)
     char    buffer[12];
     char    *value;
     
-    if (strcmp(var_name, "?") == 0)
+    if (ft_strncmp(var_name, "?", 1) == 0)
     {
         itoa(shell->last_exit, buffer, 10);
-        return (strdup(buffer));
+        return (ft_strdup(buffer));
     }
 
     value = find_variable_in_env(shell->env, var_name);
     if (value)
-        return (strdup(value));
+        return (ft_strdup(value));
     
-    return (strdup(""));
+    return (ft_strdup(""));
 }
 
 static int calculate_expanded_length(char *original, t_var_pos *vars, 
                                     char **values, int var_count)
 {
-    int new_len = strlen(original);
+    int new_len = ft_strlen(original);
     int i = 0;
     
     while (i < var_count)
     {
         new_len -= (vars[i].end - vars[i].start);
-        new_len += strlen(values[i]);
+        new_len += ft_strlen(values[i]);
         i++;
     }
     return (new_len);
@@ -138,7 +136,7 @@ static char *build_expanded_string(char *original, t_var_pos *vars,
     {
         if (var_idx < var_count && orig_idx == vars[var_idx].start)
         {
-            int val_len = strlen(values[var_idx]);
+            int val_len = ft_strlen(values[var_idx]);
             int i = 0;
             while (i < val_len)
                 expanded[exp_idx++] = values[var_idx][i++];
@@ -163,7 +161,7 @@ static char *expand_string(t_shell *shell, char *str)
     
     vars = find_variables_with_positions(str, &var_count);
     if (!vars || var_count == 0)
-        return (strdup(str)); 
+        return (ft_strdup(str)); 
     
     values = malloc(sizeof(char *) * var_count);
     if (!values)
@@ -224,7 +222,7 @@ void expander(t_command **cmd_list, t_shell *shell)
         {
             if (element->kind == ARG)
             {
-                if (strchr(element->u_.arg->str, '$') && (element->u_.arg->type == DOLLAR || element->u_.arg->type == SPECIAL_VARIABLE))
+                if (ft_strchr(element->u_.arg->str, '$') && (element->u_.arg->type == DOLLAR || element->u_.arg->type == SPECIAL_VARIABLE))
                 {
                     old_str = element->u_.arg->str;
                     new_str = expand_string(shell, old_str);
@@ -238,7 +236,7 @@ void expander(t_command **cmd_list, t_shell *shell)
             }
             else if (element->kind == REDIR)
             {
-                if (strchr(element->u_.redirs->target, '$') && (element->u_.redirs->target_type == DOLLAR || element->u_.redirs->target_type == SPECIAL_VARIABLE))
+                if (ft_strchr(element->u_.redirs->target, '$') && (element->u_.redirs->target_type == DOLLAR || element->u_.redirs->target_type == SPECIAL_VARIABLE))
                 {
                     old_str = element->u_.redirs->target;
                     new_str = expand_string(shell, old_str);

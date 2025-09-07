@@ -52,19 +52,19 @@ t_type_cmd	identify_builtin(const char *str)
 {
 	if (!str)
 		return (NOT_BUILTIN);
-	if (strcmp(str, "echo") == 0)
+	if (ft_strncmp(str, "echo", 4) == 0)
 		return (T_ECHO);
-	if (strcmp(str, "cd") == 0)
+	if (ft_strncmp(str, "cd", 2) == 0)
 		return (T_CD);
-	if (strcmp(str, "pwd") == 0)
+	if (ft_strncmp(str, "pwd", 3) == 0)
 		return (T_PWD);
-	if (strcmp(str, "export") == 0)
+	if (ft_strncmp(str, "export", 6) == 0)
 		return (T_EXPORT);
-	if (strcmp(str, "unset") == 0)
+	if (ft_strncmp(str, "unset", 5) == 0)
 		return (T_UNSET);
-	if (strcmp(str, "env") == 0)
+	if (ft_strncmp(str, "env", 3) == 0)
 		return (T_ENV);
-	if (strcmp(str, "exit") == 0)
+	if (ft_strncmp(str, "exit", 4) == 0)
 		return (T_EXIT);
 	return (NOT_BUILTIN);
 }
@@ -78,7 +78,7 @@ t_arg	*create_arg(t_type type, const char *str)
 	arg = malloc(sizeof(t_arg));
 	if (!arg)
 		return (NULL);
-	arg->str = strdup(str);
+	arg->str = ft_strdup(str);
 	if (!arg->str)
 	{
 		free(arg);
@@ -94,10 +94,10 @@ t_redir	*create_redir(t_type type, const char *target, t_type target_type)
 
 	if (!target)
 		return (NULL);
-	redir = calloc(1, sizeof(t_redir));
+	redir = ft_calloc(1, sizeof(t_redir));
 	if (!redir)
 		return (NULL);
-	redir->target = strdup(target);
+	redir->target = ft_strdup(target);
 	if (!redir->target)
 	{
 		free(redir);
