@@ -48,14 +48,17 @@ static char *resolve_in_path(const char *cmd, char **env)
 
 static int exec_with_path(char **argv, t_shell *sh)
 {
-	if (strchr(argv[0], '/')) {
+	if (strchr(argv[0], '/')) 
+	{
+		reset_signals_for_child();
 		execve(argv[0], argv, sh->env);
 		return -1; 
 	}
 	char *full = resolve_in_path(argv[0], sh->env);
-	if (full) {
+	if (full) 
+	{
+		reset_signals_for_child();
 		execve(full, argv, sh->env);
-		// sh->shlvl++;
 		free(full);
 		return -1;
 	}

@@ -1,13 +1,13 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <stdio.h>             
 # include <dirent.h>
 # include <errno.h>
-# include <readline/history.h>
+# include <readline/history.h>   
 # include <readline/readline.h>
 # include <signal.h>
 # include <stddef.h>
-# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/ioctl.h>
@@ -21,8 +21,7 @@
 # include "0.env/env.h"
 # include "4.expander/expander.h"
 
-
-// int 		g_signal_received = 0;
+extern int 		g_signal_received;
 
 typedef enum e_type
 {
@@ -199,6 +198,12 @@ int						add_argument(t_command *cmd, t_type type,
 							const char *str);
 // env.c 
 void    init_shell_shlvl(t_shell *shell, char **envp);
+
+// signals.c
+void    signal_handler(int sig);
+void    check_signals(void);
+void    reset_signals_for_child(void);
+void    setup_signals(void);
 
 // expander.c
 void					expander(t_command **cmd_list, t_shell *shell);

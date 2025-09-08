@@ -133,11 +133,11 @@ int main(int ac, char **av, char **envp)
 		return code;
 	}
 
-	// setup_signals();
+	setup_signals();
 	// Mode interactif
 	while (1)
 	{
-		// check_signals();
+		check_signals();
 		char *line = readline("minishell$ ");
 		if (!line) 
 		{ 

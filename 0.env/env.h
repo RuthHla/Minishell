@@ -21,5 +21,4 @@ char    *get_env_value_from_envp(char **envp, const char *var);
 char    *get_env_value(char **env, const char *var);
 int     count_env_vars(char **env);
 
-
 #endif
