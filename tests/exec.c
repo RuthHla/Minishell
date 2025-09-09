@@ -151,5 +151,5 @@ int main(int ac, char **av, char **envp)
 		free(line);
 		shell.last_exit = code; // pour tester $?
 	}
-	return 0;
+	return shell.last_exit;
 }

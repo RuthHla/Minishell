@@ -35,7 +35,9 @@ static t_var_pos *find_variables_with_positions(char *str, int *count)
     
     while (str[i])
     {
-        if (str[i] == '$' && (valid_variable_char(str[i + 1]) || str[i + 1] == '?'))
+        if (str[i] == '$' && 
+        str[i + 1] != '\0' &&
+        (valid_variable_char(str[i + 1]) || str[i + 1] == '?'))
         {
             vars[index].start = i;
             j = i + 1;
@@ -70,7 +72,6 @@ static t_var_pos *find_variables_with_positions(char *str, int *count)
                 }
                 
                 int k = 0;
-                // Ne PAS inclure ? dans la condition
                 while (valid_variable_char(str[j]))
                     vars[index].name[k++] = str[j++];
                 vars[index].name[k] = '\0';
