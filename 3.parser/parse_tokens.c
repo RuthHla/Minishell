@@ -32,7 +32,8 @@ static int	check_redir(t_token *token_list)
 				"bash: syntax error near unexpected token `newline'\n");
 			return (0);
 		}
-		if (!(target->type == LITERAL || target->type == DOLLAR || target->type == SPECIAL_VARIABLE))
+		if (!(target->type == LITERAL || target->type == DOLLAR 
+				|| target->type == SPECIAL_VARIABLE))
 		{
 			if (target->str && target->str[0])
 				fprintf(stderr,

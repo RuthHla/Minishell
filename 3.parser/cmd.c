@@ -12,9 +12,6 @@
 
 #include "../minishell.h"
 
-// Proteger fonction -> utiliser une variuable plutit que la liste elle meme
-// + verif tj check liste non null
-
 int	add_cmd(t_command *cmd, char *str)
 {
 	if (cmd->cmd == CMD_NONE)
@@ -77,7 +74,6 @@ static int	handle_pipe(t_token **token_list, t_command **current)
 	return (0);
 }
 
-// a proteger
 static void	handle_cmd_or_arg(t_token **token_list, t_command **current,
 		char **line)
 {
@@ -90,7 +86,6 @@ static void	handle_cmd_or_arg(t_token **token_list, t_command **current,
     }
     if (!add_argument(*current, (*token_list)->type, (*token_list)->str))
         cleanall_exit(*current, *token_list, line);
-
     *token_list = (*token_list)->next;
 }
 
@@ -113,7 +108,6 @@ int	save_all(t_command *cmd, t_token *token_list, char **line)
 		else if (token_list->type == LITERAL || token_list->type == DOLLAR
 			|| token_list->type == SPECIAL_VARIABLE)
 			handle_cmd_or_arg(&token_list, &current, line);
-		
 		else if (token_list->type == PIPE)
 		{
 			if (!handle_pipe(&token_list, &current))

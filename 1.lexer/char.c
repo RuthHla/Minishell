@@ -74,6 +74,16 @@ static int	append_char(t_character **head, t_character **tail, char ch,
 	return (1);
 }
 
+static int	check_empty_string(char next_c, t_ctx context)
+{
+	t_ctx	next_context;
+
+	next_context = get_ctx_type(next_c);
+	if (context == next_context)
+		return (1);
+	return (0);
+}
+
 t_character	*build_char_list(char *line)
 {
 	t_ctx		ctx;
@@ -91,6 +101,17 @@ t_character	*build_char_list(char *line)
 	{
 		if (handle_quote_context(line[i], &ctx))
 		{
+			if (ctx != NONE && line[i + 1] != '\0')
+			{
+				if (check_empty_string(line[i + 1], ctx))
+				{
+					if (!append_char(&head, &tail, '\0', ctx, word))
+						return (NULL);
+					i += 2;
+					ctx = NONE;
+					continue ;
+				}
+			}
 			i++;
 			continue ;
 		}
@@ -125,3 +146,4 @@ t_character	*build_char_list(char *line)
 		return (NULL);
 	return (head);
 }
+

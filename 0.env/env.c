@@ -28,10 +28,8 @@ void add_env_var(char ***env, char *new_var)
         new_env[i] = (*env)[i];
         i++;
     }
-    
     new_env[count] = new_var;
     new_env[count + 1] = NULL;
-    
     free(*env);
     *env = new_env;
 }
@@ -40,12 +38,13 @@ void set_env_var(char ***env, const char *var, const char *value)
 {
     char *new_var;
     char *temp;
-    int i = 0;
-    int var_len = ft_strlen(var);
+    int i;
+    int var_len;
     
+    i = 0;
+    var_len = ft_strlen(var);
     if (!env || !var || !value)
         return;
-    
     temp = ft_strjoin(var, "=");
     if (!temp)
         return;
@@ -91,11 +90,9 @@ void init_shell_shlvl(t_shell *shell, char **envp)
         }
         else
             current_shlvl = 1;
-        
         shell->shlvl = current_shlvl;
         new_shlvl_str = ft_itoa(current_shlvl);
     }
-    
     if (new_shlvl_str)
     {
         set_env_var(&shell->env, "SHLVL", new_shlvl_str);

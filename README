@@ -2,10 +2,11 @@
 # **A FAIRE :
 
 Amaury --> BUILTIN
-Arthur --> Gestion des signaux (fin de exec.c) / 
--remplacer fonction par libft / -> OK manque juste fprintf dans parser + adapte itoa expander
--SHLVL -> OK
--$? -> OK
+Arthur -->
+- enregistrer token vide "" --> OK
+- chiffre n'arrete pas lexpansion --> OK
+- si '/' juste derriere variable alors literal --> sujet precise quil ne faut pas le gerer --> OK
+
 -ajt une option pour detecter les quotes au sein d'une variable -> ajouter liste chainee de segment au token puis ajout de l'option a expander
 Gestion des signaux + si '/' juste derriere variable alors literal + chiffre n'arrete pas lexpansion
 

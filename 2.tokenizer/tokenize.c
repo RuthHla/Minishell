@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-// IMPORTANT -> securiser les fonctions
 static int	is_expandable_dollar(t_character *dollar_char)
 {
 	t_character	*next;
@@ -72,6 +71,8 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	word_start = *char_list;
 	current = word_start;
 	len = 0;
+	token_type = LITERAL;
+	i = 0;
 	while (current && same_word(word_start, current)
 		&& !is_operator_char(current->c))
 	{
@@ -79,8 +80,14 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 		current = current->next;
 	}
 	if (len == 0)
+	{
+		tok = new_token(LITERAL, 0);
+		if (!tok)
+			return (0);
+		append_token(head, tail, tok);
+		*char_list = (*char_list)->next;
 		return (1);
-	token_type = LITERAL;
+	}
 	if (word_has_special_variable(word_start))
 		token_type = SPECIAL_VARIABLE;
 	else if (word_has_expandable_dollar(word_start))
@@ -90,7 +97,8 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 		return (0);
 	current = word_start;
 	i = 0;
-	while (i < len && current)
+	while (current && same_word(word_start, current)
+		&& !is_operator_char(current->c))
 	{
 		tok->str[i++] = current->c;
 		current = current->next;

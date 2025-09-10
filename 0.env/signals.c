@@ -29,9 +29,7 @@ void signal_handler(int sig)
 void check_signals(void)
 {
     if (g_signal_received == SIGINT)
-    {
         g_signal_received = 0;
-    }
 }
 
 void reset_signals_for_child(void)

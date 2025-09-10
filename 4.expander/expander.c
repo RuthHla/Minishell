@@ -72,7 +72,8 @@ static t_var_pos *find_variables_with_positions(char *str, int *count)
                 }
                 
                 int k = 0;
-                while (valid_variable_char(str[j]))
+                while (valid_variable_char(str[j]) ||
+                (k > 0 && valid_variable_char_number(str[j])))
                     vars[index].name[k++] = str[j++];
                 vars[index].name[k] = '\0';
                 

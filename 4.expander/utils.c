@@ -12,6 +12,14 @@
 
 #include "../minishell.h"
 
+int	valid_variable_char_number(char c)
+{
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+		|| (c >= '0' && c <= '9'))
+		return (1);
+	return (0);
+}
+
 char	*itoa(int value, char *str, int base)
 {
 	char	*rc;
