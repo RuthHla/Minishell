@@ -6,11 +6,16 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 14:02:17 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/03 12:04:28 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 11:51:47 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
+
+// void free_env(char **env)
+// {
+// 	int i = 0;
+// }
 
 char	**init_local_env(void)
 {
@@ -24,6 +29,8 @@ char	**init_local_env(void)
 	env[2] = ft_strdup("PATH=/usr/bin:/bin");
 	env[3] = ft_strdup("PWD=/home/alandel");
 	env[4] = NULL;
+	// if(!env[0] || !env[1] || !env[2] || !env[3])
+	// 	free_env(env);
 	return (env);
 }
 

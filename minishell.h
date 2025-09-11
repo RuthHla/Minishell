@@ -220,4 +220,25 @@ int						collect_redirs_fds(t_element *elem, t_ios *ios);
 // heredoc
 int						create_heredoc_fd(const char *delim);
 
+// builtin
+int   builtin_echo(t_command *cmd, t_shell *sh);
+int   builtin_pwd(t_command *cmd, t_shell *sh);
+int   builtin_cd(t_command *cmd, t_shell *sh);
+
+// Exécute un builtin dans le **processus courant** (parent), renvoie son code.
+int   exec_builtin(t_command *cmd, t_shell *sh);
+
+// Helper de détection
+int   is_builtin_cmd(t_type_cmd cmd);
+
+// builtins
+int builtin_export(t_command *cmd, t_shell *sh);
+int builtin_unset(t_command *cmd, t_shell *sh);
+int builtin_env(t_command *cmd, t_shell *sh);
+int builtin_exit(t_command *cmd, t_shell *sh);
+
+// dispatcher (si pas déjà présent)
+int exec_builtin(t_command *cmd, t_shell *sh);
+int is_builtin_cmd(t_type_cmd cmd);
+
 #endif

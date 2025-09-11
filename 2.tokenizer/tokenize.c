@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 11:12:27 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 13:30:26 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ static int	word_has_special_variable(t_character *word_start)
 	t_character	*next;
 
 	current = word_start;
-	while (current && same_word(word_start, current)
-		&& !is_operator_char(current->c))
+	while (current && same_word(word_start, current))
 	{
 		if (current->c == '$' && current->context != S_QUOTE)
 		{
@@ -57,8 +56,7 @@ static int	word_has_expandable_dollar(t_character *word_start)
 	t_character	*next;
 
 	current = word_start;
-	while (current && same_word(word_start, current)
-		&& !is_operator_char(current->c))
+	while (current && same_word(word_start, current))
 	{
 		if (is_expandable_dollar(current))
 		{
@@ -92,7 +90,7 @@ int	create_word_token(t_token **head, t_token **tail,
 		len++;
 		current = current->next;
 	}
-	if (len == 0)
+	if (len == 0 && (current->next->word_id != current->word_id))
 	{
 		tok = new_token(LITERAL, 0);
 		if (!tok)
@@ -179,7 +177,7 @@ t_token	*build_token_list(t_character *char_list)
 
 	head = NULL;
 	tail = NULL;
-	
+
 	while (char_list)
 	{
 		if (is_operator_type(char_list->type))

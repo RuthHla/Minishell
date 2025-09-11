@@ -6,61 +6,61 @@
 
 #include "minishell.h"
 
-static const char *type_name(t_type t)
-{
-	if (t == LITERAL) return "LITERAL";
-	if (t == PIPE) return "PIPE";
-	if (t == REDIR_IN) return "<";
-	if (t == HEREDOC) return "<<";
-	if (t == REDIR_OUT) return ">";
-	if (t == APPEND) return ">>";
-	if (t == DOLLAR) return "$";
-	if (t == SPECIAL_VARIABLE) return "SPECIAL_VARIABLE";
-	return "UNKNOWN";
-}
+// static const char *type_name(t_type t)
+// {
+// 	if (t == LITERAL) return "LITERAL";
+// 	if (t == PIPE) return "PIPE";
+// 	if (t == REDIR_IN) return "<";
+// 	if (t == HEREDOC) return "<<";
+// 	if (t == REDIR_OUT) return ">";
+// 	if (t == APPEND) return ">>";
+// 	if (t == DOLLAR) return "$";
+// 	if (t == SPECIAL_VARIABLE) return "SPECIAL_VARIABLE";
+// 	return "UNKNOWN";
+// }
 
-static const char *cmd_name(t_type_cmd c)
-{
-	if (c == T_ECHO) return "echo";
-	if (c == T_CD) return "cd";
-	if (c == T_PWD) return "pwd";
-	if (c == T_EXPORT) return "export";
-	if (c == T_UNSET) return "unset";
-	if (c == T_ENV) return "env";
-	if (c == T_EXIT) return "exit";
-	if (c == CMD_NONE) return "(none)";
-	return "not_builtin";
-}
+// static const char *cmd_name(t_type_cmd c)
+// {
+// 	if (c == T_ECHO) return "echo";
+// 	if (c == T_CD) return "cd";
+// 	if (c == T_PWD) return "pwd";
+// 	if (c == T_EXPORT) return "export";
+// 	if (c == T_UNSET) return "unset";
+// 	if (c == T_ENV) return "env";
+// 	if (c == T_EXIT) return "exit";
+// 	if (c == CMD_NONE) return "(none)";
+// 	return "not_builtin";
+// }
 
-static void print_command_structure(t_command *cmd_list)
-{
-	for (t_command *cmd = cmd_list; cmd; cmd = cmd->next)
-	{
-		printf("(cmd)[%s]\n", cmd_name(cmd->cmd));
-		for (t_element *e = cmd->element; e; e = e->next)
-		{
-			if (e->kind == ARG && e->u_.arg)
-			{
-				printf("    (arg)[%s] -> %s\n",
-					type_name(e->u_.arg->type),
-					e->u_.arg->str ? e->u_.arg->str : "(null)");
-			}
-			else if (e->kind == REDIR && e->u_.redirs)
-			{
-				for (t_redir *r = e->u_.redirs; r; r = r->next)
-				{
-					printf("    (redir)[%s]\n", type_name(r->type));
-					printf("        (target)[%s] -> %s\n",
-						type_name(r->target_type),
-						r->target ? r->target : "(null)");
-				}
-			}
-		}
-		if (cmd->has_pipe_out && cmd->next)
-			printf("    [PIPE] -> |\n");
-		puts("");
-	}
-}
+// static void print_command_structure(t_command *cmd_list)
+// {
+// 	for (t_command *cmd = cmd_list; cmd; cmd = cmd->next)
+// 	{
+// 		printf("(cmd)[%s]\n", cmd_name(cmd->cmd));
+// 		for (t_element *e = cmd->element; e; e = e->next)
+// 		{
+// 			if (e->kind == ARG && e->u_.arg)
+// 			{
+// 				printf("    (arg)[%s] -> %s\n",
+// 					type_name(e->u_.arg->type),
+// 					e->u_.arg->str ? e->u_.arg->str : "(null)");
+// 			}
+// 			else if (e->kind == REDIR && e->u_.redirs)
+// 			{
+// 				for (t_redir *r = e->u_.redirs; r; r = r->next)
+// 				{
+// 					printf("    (redir)[%s]\n", type_name(r->type));
+// 					printf("        (target)[%s] -> %s\n",
+// 						type_name(r->target_type),
+// 						r->target ? r->target : "(null)");
+// 				}
+// 			}
+// 		}
+// 		if (cmd->has_pipe_out && cmd->next)
+// 			printf("    [PIPE] -> |\n");
+// 		puts("");
+// 	}
+// }
 
 static int one_shot(char *line, t_shell *sh, int verbose)
 {
@@ -68,12 +68,10 @@ static int one_shot(char *line, t_shell *sh, int verbose)
 	t_token     *toks  = NULL;
 	t_command   *cmds  = NULL;
 
-	// 1) LEXER
 	chars = build_char_list(line);
 	if (!chars)
 		return 1;
 
-	// 2) TOKENIZER
 	toks = build_token_list(chars);
 	if (!toks)
 	{
@@ -81,30 +79,25 @@ static int one_shot(char *line, t_shell *sh, int verbose)
 		return 1;
 	}
 
-	// 3) PARSER -> AST commandes
 	cmds = init_struct_globale(toks, &line);
-	if (!cmds) // parse error déjà affichée
+	if (!cmds)
 	{
 		free_token_list(toks);
 		free_character_list(chars);
 		return 2;
 	}
 
-	// 4) EXPANDER ($VAR, $?)
 	expander(&cmds, sh);
 
-	// 5) DEBUG : afficher la structure après expansion
 	if (verbose)
 	{
-		puts("----- EXPANDED COMMAND STRUCTURE -----");
-		print_command_structure(cmds);
-		puts("--------------------------------------");
+		// puts("----- EXPANDED COMMAND STRUCTURE -----");
+		// print_command_structure(cmds);
+		// puts("--------------------------------------");
 	}
 
-	// 6) EXECUTION : pipes + redirections
 	int code = run_pipeline(cmds, sh);
 
-	// 7) CLEANUP
 	cleanup(cmds);
 	free_token_list(toks);
 	free_character_list(chars);

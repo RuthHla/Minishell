@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 10:25:01 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 11:53:36 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,11 @@ int	same_word(t_character *a, t_character *b)
 {
 	if (!a || !b)
 		return (0);
-	if (a->word_id == b->word_id)
-		return (1);
-	return (0);
+	if (a->word_id != b->word_id)
+		return (0);
+	// if (a->context != b->context)
+	// 	return (0);
+	return (1);
 }
 
 t_token	*new_token(t_type type, size_t len)

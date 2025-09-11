@@ -1,9 +1,9 @@
-NAME := minishell
+NAME := minishell_main
 NAME_LEX := test_lexer
 NAME_TOK := test_tokenizer
 NAME_PAR := test_parser
 NAME_EXP := test_expander
-NAME_EXEC := test_exec
+NAME_EXEC := minishell
 
 CC := cc
 
@@ -24,7 +24,7 @@ SRC_LEXER := 1.lexer/char.c 1.lexer/utils.c
 SRC_TOKENIZER := 2.tokenizer/tokenize.c 2.tokenizer/utils.c
 SRC_PARSER := 3.parser/init.c 3.parser/free.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c
 SRC_EXPANDER := 0.env/env.c  0.env/utils.c 0.env/signals.c 0.env/shlvl.c 4.expander/expander.c 4.expander/utils.c
-SRC_EXEC := 5.exec/exec.c 5.exec/heredoc.c 5.exec/redir.c
+SRC_EXEC := 5.exec/exec.c 5.exec/heredoc.c 5.exec/redir.c 5.exec/builtins/echo.c 5.exec/builtins/cd.c 5.exec/builtins/pwd.c 5.exec/builtins/export.c 5.exec/builtins/unset.c 5.exec/builtins/env.c 5.exec/builtins/exit.c
 
 SRC_MINISHELL := minishell.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
 SRC_TEST_LEX := tests/lexer.c $(SRC_LEXER)
