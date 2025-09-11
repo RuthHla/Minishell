@@ -12,34 +12,34 @@
 
 #include "env.h"
 
-int g_signal_received = 0; 
+int		g_signal_received = 0;
 
-void signal_handler(int sig)
+void	signal_handler(int sig)
 {
-    g_signal_received = sig;
-    if (sig == SIGINT)
-    {
-        printf("\n");
-        rl_on_new_line();
-        rl_replace_line("", 0);
-        rl_redisplay();
-    }
+	g_signal_received = sig;
+	if (sig == SIGINT)
+	{
+		printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
 }
 
-void check_signals(void)
+void	check_signals(void)
 {
-    if (g_signal_received == SIGINT)
-        g_signal_received = 0;
+	if (g_signal_received == SIGINT)
+		g_signal_received = 0;
 }
 
-void reset_signals_for_child(void)
+void	reset_signals_for_child(void)
 {
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }
 
-void setup_signals(void)
+void	setup_signals(void)
 {
-    signal(SIGINT, signal_handler);
-    signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, SIG_IGN);
 }

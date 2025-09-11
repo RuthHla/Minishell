@@ -12,11 +12,11 @@
 
 #include "env.h"
 
-int get_shlvl_value(char **envp)
+int	get_shlvl_value(char **envp)
 {
-	int i;
-	
-    i = 0;
+	int	i;
+
+	i = 0;
 	if (!envp)
 		return (0);
 	while (envp[i])
@@ -28,50 +28,72 @@ int get_shlvl_value(char **envp)
 	return (0);
 }
 
-char *get_env_value_from_envp(char **envp, const char *var)
+char	*get_env_value_from_envp(char **envp, const char *var)
 {
-    int i;
-    int var_len;
-    
-    i = 0;
-    var_len = ft_strlen(var);
-    if (!envp || !var)
-        return NULL;
-    while (envp[i])
-    {
-        if (ft_strncmp(envp[i], var, var_len) == 0 && envp[i][var_len] == '=')
-            return &envp[i][var_len + 1];
-        i++;
-    }
-    return NULL;
+	int	i;
+	int	var_len;
+
+	i = 0;
+	var_len = ft_strlen(var);
+	if (!envp || !var)
+		return (NULL);
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], var, var_len) == 0 && envp[i][var_len] == '=')
+			return (&envp[i][var_len + 1]);
+		i++;
+	}
+	return (NULL);
 }
 
-char *get_env_value(char **env, const char *var)
+char	*get_env_value(char **env, const char *var)
 {
-    int i;
-    int var_len;
-    
-    i = 0;
-    var_len = ft_strlen(var);
-    if (!env || !var)
-        return NULL;
-    while (env[i])
-    {
-        if (ft_strncmp(env[i], var, var_len) == 0 && env[i][var_len] == '=')
-            return &env[i][var_len + 1];
-        i++;
-    }
-    return NULL;
+	int	i;
+	int	var_len;
+
+	i = 0;
+	var_len = ft_strlen(var);
+	if (!env || !var)
+		return (NULL);
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], var, var_len) == 0 && env[i][var_len] == '=')
+			return (&env[i][var_len + 1]);
+		i++;
+	}
+	return (NULL);
 }
 
-int count_env_vars(char **env)
+int	count_env_vars(char **env)
 {
-    int count;
+	int	count;
 
-    count = 0;
-    if (!env)
-        return 0;
-    while (env[count])
-        count++;
-    return count;
+	count = 0;
+	if (!env)
+		return (0);
+	while (env[count])
+		count++;
+	return (count);
+}
+
+void	add_env_var(char ***env, char *new_var)
+{
+	int		count;
+	char	**new_env;
+	int		i;
+
+	count = count_env_vars(*env);
+	new_env = malloc(sizeof(char *) * (count + 2));
+	if (!new_env)
+		return ;
+	i = 0;
+	while (i < count)
+	{
+		new_env[i] = (*env)[i];
+		i++;
+	}
+	new_env[count] = new_var;
+	new_env[count + 1] = NULL;
+	free(*env);
+	*env = new_env;
 }

@@ -1,0 +1,6 @@
+mkdir -p .vscode
+echo '{
+  "[c]": {
+    "editor.defaultFormatter": "keyhr.42-c-format"
+  }
+}' > .vscode/settings.json

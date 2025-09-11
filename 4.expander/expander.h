@@ -19,6 +19,6 @@ char	*find_variable_in_env(char **env, char *variable);
 int		how_many_variable(char *str);
 int		strlen_variable(char *str, int j);
 char	**find_variable_in_str(char *str);
-int	    valid_variable_char_number(char c);
+int		valid_variable_char_number(char c);
 
 #endif

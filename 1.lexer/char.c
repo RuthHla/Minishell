@@ -10,11 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// 1. Un caractère blanc (IFS) en dehors des quotes
-// 2. Un opérateur
-// 3. La fin d'un opérateur
-// 4. Un quote non échappé qui ouvre/ferme
-
 #include "../minishell.h"
 
 static t_character	*init_node(char ch, t_ctx context, int count_word,
@@ -146,4 +141,3 @@ t_character	*build_char_list(char *line)
 		return (NULL);
 	return (head);
 }
-

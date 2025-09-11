@@ -3,6 +3,9 @@
 
 Amaury --> BUILTIN
 Arthur -->
+
+- norme 0.env OK -> ajouter dossier free pour toutes les fonctions free
+
 - enregistrer token vide "" --> OK
 - chiffre n'arrete pas lexpansion --> OK
 - si '/' juste derriere variable alors literal --> sujet precise quil ne faut pas le gerer --> OK
