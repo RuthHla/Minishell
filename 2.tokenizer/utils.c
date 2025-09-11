@@ -6,11 +6,18 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/09 15:47:14 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 10:25:01 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int is_operator_type(t_type type)
+{
+	if (type == PIPE || type == APPEND || type == HEREDOC || type == REDIR_IN || type == REDIR_OUT)
+		return 1;
+	return 0;
+}
 
 int	valid_variable_char(char c)
 {

@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:00 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/04 10:29:36 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 09:50:23 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,3 +141,31 @@ t_character	*build_char_list(char *line)
 		return (NULL);
 	return (head);
 }
+
+// t_character	*build_char_list(char *line)
+// {
+// 	t_ctx		ctx;
+// 	t_character	*head;
+// 	t_character	*tail;
+// 	int			word;
+// 	int			i;
+
+// 	ctx = NONE;
+// 	head = NULL;
+// 	tail = NULL;
+// 	word = 0;
+// 	i = 0;
+// 	while (line[i])
+// 	{
+// 		if (process_quote_block(line, &i, &ctx, &head, &tail, word))
+// 			continue ;
+// 		if (process_space(line[i], ctx, &i, tail, word))
+// 			word++;
+// 		else if (!process_token(line[i], ctx, &word, &head, &tail))
+// 			return (NULL);
+// 		i++;
+// 	}
+// 	if (check_oprhan_quote(head, ctx))
+// 		return (NULL);
+// 	return (head);
+// }

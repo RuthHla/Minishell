@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/09 15:47:14 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 11:12:27 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ static int	word_has_expandable_dollar(t_character *word_start)
 	return (0);
 }
 
-int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
+int	create_word_token(t_token **head, t_token **tail,
+		t_character **char_list)
 {
 	t_character	*word_start;
 	t_character	*current;
@@ -86,7 +87,7 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	token_type = LITERAL;
 	i = 0;
 	while (current && same_word(word_start, current)
-		&& !is_operator_char(current->c))
+		&& !is_operator_type(current->type))
 	{
 		len++;
 		current = current->next;
@@ -110,7 +111,7 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	current = word_start;
 	i = 0;
 	while (current && same_word(word_start, current)
-		&& !is_operator_char(current->c))
+		&& !is_operator_type(current->type))
 	{
 		tok->str[i++] = current->c;
 		current = current->next;
@@ -120,6 +121,7 @@ int	create_word_token(t_token **head, t_token **tail, t_character **char_list)
 	*char_list = current;
 	return (1);
 }
+
 
 int	create_operator_token(t_token **h, t_token **t, t_character **p)
 {
@@ -177,9 +179,10 @@ t_token	*build_token_list(t_character *char_list)
 
 	head = NULL;
 	tail = NULL;
+	
 	while (char_list)
 	{
-		if (is_operator_char(char_list->c))
+		if (is_operator_type(char_list->type))
 		{
 			if (!create_operator_token(&head, &tail, &char_list))
 				return (free_token_list(head), NULL);
