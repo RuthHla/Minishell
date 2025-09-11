@@ -1,17 +1,11 @@
 
 # **A FAIRE :
 
-Amaury --> BUILTIN
-Arthur -->
+Amaury --> Compiler + Leaks + norme 
+Arthur --> Proteger fonction pour funcheck (ajout dossier free) / norme
 
-- norme 0.env OK -> ajouter dossier free pour toutes les fonctions free
-
-- enregistrer token vide "" --> OK
-- chiffre n'arrete pas lexpansion --> OK
-- si '/' juste derriere variable alors literal --> sujet precise quil ne faut pas le gerer --> OK
-
--ajt une option pour detecter les quotes au sein d'une variable -> ajouter liste chainee de segment au token puis ajout de l'option a expander
-Gestion des signaux + si '/' juste derriere variable alors literal + chiffre n'arrete pas lexpansion
+<!-- -ajt une option pour detecter les quotes au sein d'une variable -> ajouter liste chainee de segment au token puis ajout de l'option a expander
+Gestion des signaux + si '/' juste derriere variable alors literal + chiffre n'arrete pas lexpansion -->
 
 GESTION DES SIGNAUX :
 - s'occuper que du mode interactif (en attente de commande comme le demande le sujet)

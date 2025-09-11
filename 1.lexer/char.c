@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:46:00 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 09:50:23 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 15:18:05 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,13 @@ static int	append_char(t_character **head, t_character **tail, char ch,
 	return (1);
 }
 
-static int	check_empty_string(char next_c, t_ctx context)
+static int	check_empty_string(t_ctx ctx, char next_c, char next_next_c)
 {
-	t_ctx	next_context;
+	t_ctx	next_ctx;
 
-	next_context = get_ctx_type(next_c);
-	if (context == next_context)
+	next_ctx = get_ctx_type(next_c);
+	if (ctx == next_ctx && (is_operator_char(next_next_c)
+			|| ft_isspace(next_next_c) || next_next_c == '\0'))
 		return (1);
 	return (0);
 }
@@ -98,7 +99,7 @@ t_character	*build_char_list(char *line)
 		{
 			if (ctx != NONE && line[i + 1] != '\0')
 			{
-				if (check_empty_string(line[i + 1], ctx))
+				if (check_empty_string(ctx, line[i + 1], line[i + 2]))
 				{
 					if (!append_char(&head, &tail, '\0', ctx, word))
 						return (NULL);

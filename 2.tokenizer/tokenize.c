@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 13:30:26 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 14:48:06 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,13 +84,15 @@ int	create_word_token(t_token **head, t_token **tail,
 	len = 0;
 	token_type = LITERAL;
 	i = 0;
+	// calculer la len de la string de notre token
 	while (current && same_word(word_start, current)
 		&& !is_operator_type(current->type))
 	{
 		len++;
 		current = current->next;
 	}
-	if (len == 0 && (current->next->word_id != current->word_id))
+	// si jai une string null alors je cree un token string null (si pas dans le meme mot)
+	if (len == 0 && (current->word_id && current->next->word_id))
 	{
 		tok = new_token(LITERAL, 0);
 		if (!tok)
@@ -99,15 +101,18 @@ int	create_word_token(t_token **head, t_token **tail,
 		*char_list = (*char_list)->next;
 		return (1);
 	}
+		
 	if (word_has_special_variable(word_start))
 		token_type = SPECIAL_VARIABLE;
 	else if (word_has_expandable_dollar(word_start))
 		token_type = DOLLAR;
+	// creation du nouveau token
 	tok = new_token(token_type, len);
 	if (!tok)
 		return (0);
 	current = word_start;
 	i = 0;
+	// remplir str du nouveau token
 	while (current && same_word(word_start, current)
 		&& !is_operator_type(current->type))
 	{
@@ -115,6 +120,7 @@ int	create_word_token(t_token **head, t_token **tail,
 		current = current->next;
 	}
 	tok->str[len] = '\0';
+	// ajouter token a la liste
 	append_token(head, tail, tok);
 	*char_list = current;
 	return (1);

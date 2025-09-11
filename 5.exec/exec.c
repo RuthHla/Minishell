@@ -1,6 +1,50 @@
 #include "../minishell.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+/* errno -> code bash */
+static int exit_status_from_errno(int e)
+{
+    switch (e) {
+        case ENOENT:   return 127; // not found
+        case EACCES:   return 126; // permission denied
+        case EISDIR:   return 126; // is a directory
+        case ENOTDIR:  return 126; // path component not a dir
+        case ENOEXEC:  return 126; // exec format error
+        default:       return 126; // found but can't execute
+    }
+}
+
+static int is_directory(const char *p)
+{
+    struct stat st;
+    return (p && stat(p, &st) == 0 && S_ISDIR(st.st_mode));
+}
+
+/* messages style bash */
+static void print_exec_error(const char *path, const char *argv0, int e)
+{
+    /* si argv0 ne contient pas '/', bash dit “command not found” pour ENOENT */
+    if (argv0 && strchr(argv0, '/') == NULL) {
+        if (e == ENOENT)
+            dprintf(STDERR_FILENO, "%s: command not found\n", argv0);
+        else
+            dprintf(STDERR_FILENO, "%s: %s\n", argv0, strerror(e));
+        return;
+    }
+    const char *shown = path ? path : argv0;
+    if (!shown) shown = "(null)";
+
+    if (e == EISDIR)       dprintf(STDERR_FILENO, "%s: Is a directory\n", shown);
+    else if (e == ENOENT)  dprintf(STDERR_FILENO, "%s: No such file or directory\n", shown);
+    else if (e == EACCES)  dprintf(STDERR_FILENO, "%s: Permission denied\n", shown);
+    else if (e == ENOTDIR) dprintf(STDERR_FILENO, "%s: Not a directory\n", shown);
+    else if (e == ENOEXEC) dprintf(STDERR_FILENO, "%s: Exec format error\n", shown);
+    else                   dprintf(STDERR_FILENO, "%s: %s\n", shown, strerror(e));
+}
 
 static char *join_path(const char *dir, const char *cmd)
 {
@@ -49,16 +93,24 @@ static int exec_with_path(char **argv, t_shell *sh)
 {
     if (!argv || !argv[0]) { errno = EINVAL; return -1; }
 
-    if (strchr(argv[0], '/')) {          
+    if (strchr(argv[0], '/')) {
+        /* chemin explicite: si c'est un répertoire => EISDIR */
+        if (is_directory(argv[0])) { errno = EISDIR; return -1; }
         execve(argv[0], argv, sh->env);
-        return -1;
+        return -1; /* errno left by execve */
     }
+
     char *full = resolve_in_path(argv[0], sh->env);
     if (full) {
+        /* si la cible dans PATH est un dossier, renvoyer EISDIR comme bash */
+        if (is_directory(full)) { errno = EISDIR; free(full); return -1; }
         execve(full, argv, sh->env);
+        int e = errno; /* sauvegarder errno avant free */
         free(full);
+        errno = e;
         return -1;
     }
+
     errno = ENOENT;
     return -1;
 }
@@ -86,18 +138,20 @@ int exec_builtin(t_command *cmd, t_shell *sh)
 static char **build_argv(const t_command *cmd)
 {
     size_t argc = 0;
-    for (t_element *e = cmd->element; e; e = e->next)
-        if (e->kind == ARG) argc++;
-
+    for (t_element *e = cmd->element; e; e = e->next) {
+        if (e->kind == ARG && e->u_.arg && e->u_.arg->str && *e->u_.arg->str)
+            argc++;
+    }
     if (argc == 0) return NULL;
 
     char **argv = calloc(argc + 1, sizeof(char*));
     if (!argv) return NULL;
 
     size_t i = 0;
-    for (t_element *e = cmd->element; e; e = e->next)
-        if (e->kind == ARG)
+    for (t_element *e = cmd->element; e; e = e->next) {
+        if (e->kind == ARG && e->u_.arg && e->u_.arg->str && *e->u_.arg->str)
             argv[i++] = strdup(e->u_.arg->str);
+    }
     argv[i] = NULL;
     return argv;
 }
@@ -116,7 +170,6 @@ static pid_t spawn_one(t_command *cmd, int prev_read_fd, int pipe_out_fd, t_shel
     if (pid < 0) { perror("fork"); return -1; }
 
     if (pid == 0) {
-
         if (prev_read_fd >= 0) {
             if (dup2(prev_read_fd, STDIN_FILENO) < 0) { perror("dup2"); _exit(1); }
         }
@@ -129,20 +182,23 @@ static pid_t spawn_one(t_command *cmd, int prev_read_fd, int pipe_out_fd, t_shel
         if (prev_read_fd >= 0) close(prev_read_fd);
         if (pipe_out_fd >= 0) close(pipe_out_fd);
         close_redirs(&ios);
+
         if (is_builtin_cmd(cmd->cmd)) {
             int code = exec_builtin(cmd, sh);
             _exit(code);
         } else {
             char **argv = build_argv(cmd);
-            if (!argv) _exit(0); 
+            if (!argv || !argv[0]) _exit(0); /* <— no-op si vide */
             if (exec_with_path(argv, sh) < 0) {
-                perror(argv[0]);
+                int e = errno;
+                print_exec_error(NULL, argv[0], e);
+                int code = exit_status_from_errno(e);
                 free_argv(argv);
-                _exit(127);
+                _exit(code);
             }
         }
     }
-    return pid; 
+    return pid;
 }
 
 int run_pipeline(t_command *cmd_list, t_shell *sh)

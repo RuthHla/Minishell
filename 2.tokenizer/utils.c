@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 11:53:36 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/11 14:21:09 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void	free_token_list(t_token *head)
 
 int	same_word(t_character *a, t_character *b)
 {
-	if (!a || !b)
-		return (0);
+	// if (!a || !b)
+	// 	return (0);
 	if (a->word_id != b->word_id)
 		return (0);
 	// if (a->context != b->context)

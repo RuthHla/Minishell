@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 # include "0.env/env.h"
+# include <stdio.h>
 # include "4.expander/expander.h"
 # include "libft.h"
 # include <dirent.h>
@@ -10,7 +11,6 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include <stddef.h>
-# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/ioctl.h>
