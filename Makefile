@@ -1,4 +1,3 @@
-NAME := minishell_main
 NAME_LEX := test_lexer
 NAME_TOK := test_tokenizer
 NAME_PAR := test_parser
@@ -8,30 +7,29 @@ NAME_EXEC := minishell
 CC := cc
 
 # SUE LINUX
-# CFLAGS := -Wall -Wextra -Werror -MMD -MP -I. -ILibft
-# LDFLAGS := -lreadline
+ CFLAGS := -Wall -Wextra -Werror -MMD -MP -I. -ILibft
+ LDFLAGS := -lreadline
 
 # SUR MAC 
-BREW_PREFIX := $(shell brew --prefix 2>/dev/null || echo /usr/local)
-CFLAGS := -Wall -Wextra -Werror -MMD -MP -I. -ILibft -I$(BREW_PREFIX)/opt/readline/include
-LDFLAGS := -L$(BREW_PREFIX)/opt/readline/lib -lreadline
+# BREW_PREFIX := $(shell brew --prefix 2>/dev/null || echo /usr/local)
+# CFLAGS := -Wall -Wextra -Werror -MMD -MP -I. -ILibft -I$(BREW_PREFIX)/opt/readline/include
+# LDFLAGS := -L$(BREW_PREFIX)/opt/readline/lib -lreadline
 
 # Libft
 LIBFT_DIR := Libft
 LIBFT := $(LIBFT_DIR)/libft.a
 
-SRC_LEXER := 1.lexer/char.c 1.lexer/utils.c
-SRC_TOKENIZER := 2.tokenizer/tokenize.c 2.tokenizer/utils.c
-SRC_PARSER := 3.parser/init.c 3.parser/free.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c
-SRC_EXPANDER := 0.env/env.c  0.env/utils.c 0.env/signals.c 0.env/shlvl.c 4.expander/expander.c 4.expander/utils.c
-SRC_EXEC := 5.exec/exec.c 5.exec/heredoc.c 5.exec/redir.c 5.exec/builtins/echo.c 5.exec/builtins/cd.c 5.exec/builtins/pwd.c 5.exec/builtins/export.c 5.exec/builtins/unset.c 5.exec/builtins/env.c 5.exec/builtins/exit.c
-
+SRC_LEXER := 1.lexer/char.c 1.lexer/utils.c 1.lexer/init.c 6.free/free.c 6.free/free2.c 6.free/error.c
+SRC_TOKENIZER := 2.tokenizer/tokenize.c 2.tokenizer/utils.c 2.tokenizer/local_utils.c
+SRC_PARSER := 3.parser/init.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c 3.parser/add.c
+SRC_EXPANDER := 0.env/env.c  0.env/utils.c 0.env/signals.c 0.env/shlvl.c 4.expander/expander.c 4.expander/utils0.c 4.expander/utils1.c 4.expander/utils2.c 4.expander/utils3.c
+SRC_EXEC := 5.exec/exec.c 5.exec/heredoc.c 5.exec/redir.c 5.exec/builtins/echo.c 5.exec/builtins/cd.c 5.exec/builtins/pwd.c 5.exec/builtins/export.c 5.exec/builtins/unset.c 5.exec/builtins/env.c 5.exec/builtins/exit.c 5.exec/norme/redir_norme.c 5.exec/norme/redir_norme2.c 5.exec/norme/unset_norme.c 5.exec/norme/exit_norme.c 5.exec/norme/export_norme.c 5.exec/norme/export_norme2.c 5.exec/norme/cd_norme.c 5.exec/norme/exec_norme.c 5.exec/norme/exec_norme2.c 5.exec/norme/exec_norme3.c 5.exec/norme/exec_norme4.c 5.exec/norme/exec_norme5.c 5.exec/norme/exec_norme6.c 5.exec/norme/exec_norme7.c
 SRC_MINISHELL := minishell.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
 SRC_TEST_LEX := tests/lexer.c $(SRC_LEXER)
 SRC_TEST_TOK := tests/tokenizer.c $(SRC_LEXER) $(SRC_TOKENIZER)
 SRC_TEST_PAR := tests/parser.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER)
 SRC_TEST_EXP := tests/test_expander.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER) $(SRC_EXPANDER)
-SRC_TEST_EXEC := tests/exec.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER) $(SRC_EXPANDER) $(SRC_EXEC)
+SRC_TEST_EXEC := main.c $(SRC_LEXER) $(SRC_TOKENIZER) $(SRC_PARSER) $(SRC_EXPANDER) $(SRC_EXEC)
 
 OBJDIR := obj
 OBJDIR_MINI := $(OBJDIR)/minishell
@@ -52,7 +50,7 @@ DEPS := $(OBJS_MINI:.o=.d) $(OBJS_TLEX:.o=.d) $(OBJS_TTOK:.o=.d) $(OBJS_TPAR:.o=
 
 .PHONY: all clean fclean re test-lexer test-tokenizer test-parser test-expander test-exec
 
-all: $(NAME)
+all: $(NAME_EXEC)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)

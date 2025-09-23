@@ -12,10 +12,33 @@
 
 #include "env.h"
 
-// void free_env(char **env)
-// {
-// 	int i = 0;
-// }
+char	**validate_env_alloc(char **env, int len)
+{
+	int	bad;
+	int	i;
+
+	if (!env)
+		return (NULL);
+	bad = 0;
+	i = 0;
+	while (i < len)
+	{
+		if (!env[i])
+			bad = 1;
+		i++;
+	}
+	if (!bad)
+		return (env);
+	i = 0;
+	while (i < len)
+	{
+		if (env[i])
+			free(env[i]);
+		i++;
+	}
+	free(env);
+	return (NULL);
+}
 
 char	**init_local_env(void)
 {
@@ -29,9 +52,7 @@ char	**init_local_env(void)
 	env[2] = ft_strdup("PATH=/usr/bin:/bin");
 	env[3] = ft_strdup("PWD=/home/alandel");
 	env[4] = NULL;
-	// if(!env[0] || !env[1] || !env[2] || !env[3])
-	// 	free_env(env);
-	return (env);
+	return (validate_env_alloc(env, 4));
 }
 
 char	**copy_env(char **envp)
@@ -52,5 +73,5 @@ char	**copy_env(char **envp)
 		i++;
 	}
 	new_env[i] = NULL;
-	return (new_env);
+	return (validate_env_alloc(new_env, i));
 }

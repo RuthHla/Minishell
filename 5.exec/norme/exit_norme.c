@@ -1,29 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   exit_norme.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/16 10:13:57 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 10:13:58 by adenny           ###   ########.fr       */
+/*   Created: 2025/09/16 10:40:45 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/16 13:51:05 by adenny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
 
-int	builtin_pwd(t_command *cmd, t_shell *sh)
+int	is_numeric_word(const char *s)
 {
-	char	buf[4096];
+	const char	*p = s;
 
-	(void)cmd;
-	(void)sh;
-	if (getcwd(buf, sizeof buf))
-	{
-		write(STDOUT_FILENO, buf, ft_strlen(buf));
-		write(STDOUT_FILENO, "\n", 1);
+	if (!s || !*s)
 		return (0);
+	if (*p == '+' || *p == '-')
+		p++;
+	if (!*p)
+		return (0);
+	while (*p)
+	{
+		if (*p < '0' || *p > '9')
+			return (0);
+		p++;
 	}
-	perror("pwd");
 	return (1);
+}
+
+char	to_exit_u8(const char *s)
+{
+	int	v;
+
+	v = ft_atoi(s);
+	return ((unsigned char)v);
 }

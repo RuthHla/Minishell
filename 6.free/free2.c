@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   free2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/26 11:36:17 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/01 18:32:26 by alandel          ###   ########.fr       */
+/*   Created: 2025/09/17 15:08:22 by alandel           #+#    #+#             */
+/*   Updated: 2025/09/17 15:13:48 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,10 @@ void	cleanup(t_command *cmd)
 	}
 }
 
-void	cleanall_exit(t_command *cmd, t_token *token_list, char **line)
+void	cleanall(t_character *char_list, t_token *token_list,
+		t_command *cmd)
 {
-	cleanup(cmd);
+	free_character_list(char_list);
 	free_token_list(token_list);
-	if (*line)
-	{
-		free(*line);
-		*line = NULL;
-	}
+	cleanup(cmd);
 }

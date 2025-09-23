@@ -12,11 +12,12 @@
 
 #include "../minishell.h"
 
-int is_operator_type(t_type type)
+int	is_operator_type(t_type type)
 {
-	if (type == PIPE || type == APPEND || type == HEREDOC || type == REDIR_IN || type == REDIR_OUT)
-		return 1;
-	return 0;
+	if (type == PIPE || type == APPEND || type == HEREDOC || type == REDIR_IN
+		|| type == REDIR_OUT)
+		return (1);
+	return (0);
 }
 
 int	valid_variable_char(char c)
@@ -26,27 +27,10 @@ int	valid_variable_char(char c)
 	return (0);
 }
 
-void	free_token_list(t_token *head)
-{
-	t_token	*tmp;
-
-	while (head)
-	{
-		tmp = head->next;
-		free(head->str);
-		free(head);
-		head = tmp;
-	}
-}
-
 int	same_word(t_character *a, t_character *b)
 {
-	// if (!a || !b)
-	// 	return (0);
 	if (a->word_id != b->word_id)
 		return (0);
-	// if (a->context != b->context)
-	// 	return (0);
 	return (1);
 }
 

@@ -1,103 +1,86 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 12:06:38 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/17 13:07:26 by alandel          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../minishell.h"
 
-static int	setenv_in_vec(char ***penv, const char *name, const char *value)
+static const char	*cd_resolve_target(t_element *head, t_shell *sh)
 {
-	char	**env;
-	int		n;
-	size_t	ln;
-	char	*nv;
-	char	**grown;
+	const char	*home;
+	t_element	*e;
 
-	env = *penv;
-	n = 0;
-	while (env && env[n])
-		n++;
-	ln = strlen(name);
-	for (int i = 0; i < n; ++i)
+	e = head;
+	if (e && e->kind == ARG)
+		e = e->next;
+	while (e && (e->kind != ARG || !e->u_.arg || !e->u_.arg->str
+			|| !*e->u_.arg->str))
+		e = e->next;
+	if (!e)
 	{
-		if (strncmp(env[i], name, ln) == 0 && env[i][ln] == '=')
+		home = find_variable_in_env(sh->env, "HOME");
+		if (!home)
 		{
-			nv = malloc(ln + 1 + strlen(value) + 1);
-			if (!nv)
-				return (0);
-			sprintf(nv, "%s=%s", name, value);
-			free(env[i]);
-			env[i] = nv;
-			return (1);
+			write(STDERR_FILENO, "minishell: cd: HOME not set\n",
+				sizeof("minishell: cd: HOME not set\n") - 1);
+			return (NULL);
 		}
+		return (home);
 	}
-	grown = realloc(env, (n + 2) * sizeof(*grown));
-	if (!grown)
+	return (e->u_.arg->str);
+}
+
+static int	cd_update_env(t_shell *sh, const char *oldpwd, const char *newpwd)
+{
+	if (!setenv_in_vec_cd(&sh->env, "OLDPWD", oldpwd))
 		return (0);
-	grown[n] = malloc(ln + 1 + strlen(value) + 1);
-	if (!grown[n])
+	if (!setenv_in_vec_cd(&sh->env, "PWD", newpwd))
 		return (0);
-	sprintf(grown[n], "%s=%s", name, value);
-	grown[n + 1] = NULL;
-	*penv = grown;
 	return (1);
 }
 
-static const char	*get_env(char **env, const char *name)
+static int	check_how_many_arg(t_element *current)
 {
-	return (find_variable_in_env(env, (char *)name));
-}
+	int	i;
 
-static int check_how_many_arg(t_element *current)
-{ 
-    int i = 0;
-    while(current && current->kind == ARG)
-    {
-        i++;
-        current = current->next;
-    } 
-    if(i > 2)
-        return 0;
-
-    return 1;
+	i = 0;
+	while (current && current->kind == ARG)
+	{
+		i++;
+		current = current->next;
+	}
+	if (i > 2)
+		return (0);
+	return (1);
 }
 
 int	builtin_cd(t_command *cmd, t_shell *sh)
 {
-
-	const char	*target = NULL;
+	const char	*target;
 	char		oldpwd[4096];
 	char		newpwd[4096];
-    t_element *current = cmd->element;
+	t_element	*current;
 
-    if(!check_how_many_arg(current))
-        return (1);
-
-    t_element	*e = cmd->element;
-	if (e && e->kind == ARG)
-		e = e->next;
-   
-	if (!e || e->kind != ARG || !e->u_.arg || !e->u_.arg->str
-		|| !*e->u_.arg->str)
-	{
-		target = get_env(sh->env, "HOME");
-		if (!target)
-		{
-			fprintf(stderr, "minishell: cd: HOME not set\n");
-			return (1);
-		}
-	}
-	else
-	{
-		target = e->u_.arg->str;
-	}
-	if (!getcwd(oldpwd, sizeof oldpwd))
+	current = cmd->element;
+	if (!check_how_many_arg(current))
+		return (1);
+	target = cd_resolve_target(cmd->element, sh);
+	if (!target)
+		return (1);
+	if (!getcwd(oldpwd, sizeof(oldpwd)))
 		oldpwd[0] = '\0';
 	if (chdir(target) != 0)
-	{
-		perror("cd");
 		return (1);
-	}
-	if (!getcwd(newpwd, sizeof newpwd))
-	{
+	if (!getcwd(newpwd, sizeof(newpwd)))
 		return (0);
-	}
-	setenv_in_vec(&sh->env, "OLDPWD", oldpwd);
-	setenv_in_vec(&sh->env, "PWD", newpwd);
+	if (!cd_update_env(sh, oldpwd, newpwd))
+		return (0);
 	return (0);
 }

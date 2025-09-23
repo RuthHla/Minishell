@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 14:02:17 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/11 09:40:36 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/17 16:51:30 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,21 @@ void	signal_handler(int sig)
 	g_signal_received = sig;
 	if (sig == SIGINT)
 	{
-		printf("\n");
+		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
 
-void	check_signals(void)
+int	check_signals(void)
 {
 	if (g_signal_received == SIGINT)
+	{
 		g_signal_received = 0;
+		return (1);
+	}
+	return (0);
 }
 
 void	reset_signals_for_child(void)

@@ -1,68 +1,106 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 10:30:31 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/16 14:56:11 by alandel          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-#include <limits.h>
-#include <errno.h>
 
-static int is_numeric_word(const char *s)
+static void	exit_no_arg(char **argv, t_shell *sh, t_all *all)
 {
-    if (!s || !*s) return 0;
-    const char *p = s;
-    if (*p == '+' || *p == '-') p++;
-    if (!*p) return 0;
-    while (*p) {
-        if (*p < '0' || *p > '9') return 0;
-        p++;
-    }
-    return 1;
+	free_argv(argv);
+	free_env(sh);
+	cleanall(all->char_list, all->token_list,
+		all->command_list);
+	rl_clear_history();
+	exit(sh->last_exit);
 }
 
-static unsigned char to_exit_u8(const char *s)
+static void	exit_numeric_error(char **argv, int idx, t_shell *sh, t_all *all)
 {
-    // parse en signed long long puis modulo 256
-    // (bash fait un wrap 8-bit)
-    errno = 0;
-    char *end = NULL;
-    long long v = strtoll(s, &end, 10);
-    (void)end;
-    unsigned char code = (unsigned char)v;
-    return code;
+	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+	ft_putstr_fd(argv[idx], STDERR_FILENO);
+	ft_putendl_fd(": numeric argument required", STDERR_FILENO);
+	free_argv(argv);
+	free_env(sh);
+	cleanall(all->char_list, all->token_list,
+		all->command_list);
+	rl_clear_history();
+	exit(2);
 }
 
-int builtin_exit(t_command *cmd, t_shell *sh)
+static int	exit_too_many_args(char **argv, t_shell *sh, t_all *all)
 {
-    // Construire argv simple (sans mots vides: pas indispensable ici)
-    size_t argc = 0;
-    for (t_element *e = cmd->element; e; e = e->next)
-        if (e->kind == ARG) argc++;
-    char **argv = calloc(argc + 1, sizeof(char*));
-    if (!argv) return 1;
-    size_t i = 0;
-    for (t_element *e = cmd->element; e; e = e->next)
-        if (e->kind == ARG) argv[i++] = e->u_.arg->str;
-    argv[i] = NULL;
+	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
+	free_argv(argv);
+	free_env(sh);
+	cleanall(all->char_list, all->token_list,
+		all->command_list);
+	rl_clear_history();
+	return (1);
+}
 
-    int idx = 0;
-    if (argv[0] && strcmp(argv[0], "exit") == 0) idx = 1;
+static char	**collect_args(t_command *cmd, size_t *argc)
+{
+	t_element	*e;
+	char		**argv;
+	size_t		i;
 
-    dprintf(STDOUT_FILENO, "exit\n");
+	*argc = 0;
+	e = cmd->element;
+	while (e)
+	{
+		if (e->kind == ARG)
+			(*argc)++;
+		e = e->next;
+	}
+	argv = (char **)ft_calloc(*argc + 1, sizeof(char *));
+	if (!argv)
+		return (NULL);
+	i = 0;
+	e = cmd->element;
+	while (e)
+	{
+		if (e->kind == ARG)
+			argv[i++] = e->u_.arg->str;
+		e = e->next;
+	}
+	argv[i] = NULL;
+	return (argv);
+}
 
-    if (!argv[idx]) { // exit
-        free(argv);
-        exit(sh->last_exit);
-    }
 
-    if (!is_numeric_word(argv[idx])) {
-        dprintf(STDERR_FILENO, "minishell: exit: %s: numeric argument required\n", argv[idx]);
-        free(argv);
-        exit(2);
-    }
+int	builtin_exit(t_command *cmd, t_shell *sh, t_all *all)
+{
+	size_t			argc;
+	char			**argv;
+	int				idx;
+	unsigned char	code;
 
-    if (argv[idx + 1]) {
-        dprintf(STDERR_FILENO, "minishell: exit: too many arguments\n");
-        free(argv);
-        return 1; // ne pas quitter
-    }
-
-    unsigned char code = to_exit_u8(argv[idx]);
-    free(argv);
-    exit(code);
+	argv = collect_args(cmd, &argc);
+	if (!argv)
+		return (1);
+	idx = 0;
+	if (argv[0] && !ft_strncmp(argv[0], "exit", ft_strlen(argv[0]) + 1))
+		idx = 1;
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	if (!argv[idx])
+		exit_no_arg(argv, sh, all); // ajouter cleanall
+	if (!is_numeric_word(argv[idx]))
+		exit_numeric_error(argv, idx, sh, all); // ajouter cleanall
+	if (argv[idx + 1])
+		return (exit_too_many_args(argv, sh, all)); // ajouter cleanall
+	code = to_exit_u8(argv[idx]);
+	free_argv(argv);
+	free_env(sh);
+	cleanall(all->char_list, all->token_list,
+		all->command_list);
+	rl_clear_history();
+	exit(code);
 }

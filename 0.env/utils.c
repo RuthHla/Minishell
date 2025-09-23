@@ -85,7 +85,10 @@ void	add_env_var(char ***env, char *new_var)
 	count = count_env_vars(*env);
 	new_env = malloc(sizeof(char *) * (count + 2));
 	if (!new_env)
+	{
+		free(new_var);
 		return ;
+	}
 	i = 0;
 	while (i < count)
 	{

@@ -1,68 +1,66 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redir.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 09:26:50 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/16 09:39:30 by adenny           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-#include <fcntl.h>
 
-static int open_in(const char *path) {
-    int fd = open(path, O_RDONLY);
-    if (fd < 0) perror(path);
-    return fd;
-}
-
-static int open_out_trunc(const char *path) {
-    int fd = open(path, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    if (fd < 0) perror(path);
-    return fd;
-}
-
-static int open_out_append(const char *path) {
-    int fd = open(path, O_WRONLY|O_CREAT|O_APPEND, 0644);
-    if (fd < 0) perror(path);
-    return fd;
-}
-
-int collect_redirs_fds(t_element *elem, t_ios *ios)
+int	open_in(const char *path)
 {
-    ios->in_fd = -1; ios->out_fd = -1;
-    while (elem) {
-        if (elem->kind == REDIR) {
-            t_redir *r = elem->u_.redirs;
-            for (; r; r = r->next) {
-                if (r->type == REDIR_IN) {
-                    if (ios->in_fd >= 0) close(ios->in_fd);
-                    ios->in_fd = open_in(r->target);
-                    if (ios->in_fd < 0) return 0;
-                } else if (r->type == HEREDOC) {
-                    if (ios->in_fd >= 0) close(ios->in_fd);
-                    ios->in_fd = create_heredoc_fd(r->target);
-                    if (ios->in_fd < 0) return 0;
-                } else if (r->type == REDIR_OUT) {
-                    if (ios->out_fd >= 0) close(ios->out_fd);
-                    ios->out_fd = open_out_trunc(r->target);
-                    if (ios->out_fd < 0) return 0;
-                } else if (r->type == APPEND) {
-                    if (ios->out_fd >= 0) close(ios->out_fd);
-                    ios->out_fd = open_out_append(r->target);
-                    if (ios->out_fd < 0) return 0;
-                }
-            }
-        }
-        elem = elem->next;
-    }
-    return 1;
+	int	fd;
+
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		perror(path);
+	return (fd);
 }
 
-int apply_redirs(const t_ios *ios)
+int	open_out_trunc(const char *path)
 {
-    if (ios->in_fd >= 0) {
-        if (dup2(ios->in_fd, STDIN_FILENO) < 0) { perror("dup2"); return 0; }
-    }
-    if (ios->out_fd >= 0) {
-        if (dup2(ios->out_fd, STDOUT_FILENO) < 0) { perror("dup2"); return 0; }
-    }
-    return 1;
+	int	fd;
+
+	fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+		perror(path);
+	return (fd);
 }
 
-void close_redirs(t_ios *ios)
+int	open_out_append(const char *path)
 {
-    if (ios->in_fd >= 0) { close(ios->in_fd); ios->in_fd = -1; }
-    if (ios->out_fd >= 0) { close(ios->out_fd); ios->out_fd = -1; }
+	int	fd;
+
+	fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd < 0)
+		perror(path);
+	return (fd);
+}
+
+int	collect_redirs_fds(t_element *elem, t_ios *ios)
+{
+	t_redir	*r;
+
+	ios->in_fd = -1;
+	ios->out_fd = -1;
+	while (elem)
+	{
+		if (elem->kind == REDIR)
+		{
+			r = elem->u_.redirs;
+			while (r)
+			{
+				if (!apply_redir(ios, r))
+					return (0);
+				r = r->next;
+			}
+		}
+		elem = elem->next;
+	}
+	return (1);
 }

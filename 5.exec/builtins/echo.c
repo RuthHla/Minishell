@@ -1,31 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 09:47:21 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/17 13:04:45 by alandel          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../minishell.h"
 
-static int is_echo_n(const char *s)
+static int	is_echo_n(const char *s)
 {
-    if (!s || s[0] != '-') return 0;
-    for (int i = 1; s[i]; ++i) if (s[i] != 'n') return 0;
-    return (strlen(s) > 1);
+	int	i;
+
+	if (!s || s[0] != '-')
+		return (0);
+	i = 1;
+	while (s[i])
+	{
+		if (s[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (i > 1);
 }
 
-int builtin_echo(t_command *cmd, t_shell *sh)
+static void	print_args(t_element *e)
 {
-    (void)sh;
-    int no_newline = 0;
-    int first = 1;
+	int	first;
 
-    t_element *e = cmd->element;
-    if (e && e->kind == ARG) e = e->next;
+	first = 1;
+	while (e)
+	{
+		if (e->kind == ARG && e->u_.arg && e->u_.arg->str)
+		{
+			if (!first)
+				write(STDOUT_FILENO, " ", 1);
+			write(STDOUT_FILENO, e->u_.arg->str,
+				ft_strlen(e->u_.arg->str));
+			first = 0;
+		}
+		e = e->next;
+	}
+}
 
-    while (e && e->kind == ARG && e->u_.arg && is_echo_n(e->u_.arg->str))
-        e = e->next, no_newline = 1;
+int	builtin_echo(t_command *cmd, t_shell *sh)
+{
+	int			no_newline;
+	t_element	*e;
 
-    for (; e; e = e->next) {
-        if (e->kind != ARG || !e->u_.arg) continue;
-        if (!first) write(STDOUT_FILENO, " ", 1);
-        first = 0;
-        if (e->u_.arg->str)
-            write(STDOUT_FILENO, e->u_.arg->str, strlen(e->u_.arg->str));
-    }
-    if (!no_newline) write(STDOUT_FILENO, "\n", 1);
-    return 0;
+	(void)sh;
+	no_newline = 0;
+	e = cmd->element;
+	if (e && e->kind == ARG)
+		e = e->next;
+	while (e && e->kind == ARG && e->u_.arg
+		&& is_echo_n(e->u_.arg->str))
+	{
+		no_newline = 1;
+		e = e->next;
+	}
+	print_args(e);
+	if (!no_newline)
+		write(STDOUT_FILENO, "\n", 1);
+	return (0);
 }

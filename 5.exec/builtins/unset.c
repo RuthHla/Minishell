@@ -1,54 +1,62 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/16 10:18:07 by adenny            #+#    #+#             */
+/*   Updated: 2025/09/17 13:46:33 by alandel          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../minishell.h"
 
-static int is_var_start(int c){ return (c=='_'||(c>='A'&&c<='Z')||(c>='a'&&c<='z')); }
-static int is_var_continue(int c){ return is_var_start(c)||(c>='0'&&c<='9'); }
-
-static int is_valid_ident(const char *s)
+static void	print_unset_error(const char *name)
 {
-    size_t i = 0;
-    if (!s || !is_var_start(s[i])) return 0;
-    for (i = 1; s[i]; ++i)
-        if (!is_var_continue(s[i])) return 0;
-    return 1;
+	write(STDERR_FILENO, "minishell: unset: `",
+		ft_strlen("minishell: unset: `"));
+	if (name)
+		write(STDERR_FILENO, name, ft_strlen(name));
+	write(STDERR_FILENO, "': not a valid identifier\n",
+		ft_strlen("': not a valid identifier\n"));
 }
 
-static void remove_env_var(char ***penv, const char *name)
+static int	process_unset_args(char **args, t_shell *sh)
 {
-    char **env = *penv; if (!env) return;
-    size_t ln = strlen(name);
-    int w = 0;
-    for (int r = 0; env[r]; ++r){
-        if (!(strncmp(env[r], name, ln) == 0 && env[r][ln] == '=')){
-            env[w++] = env[r];
-        } else {
-            free(env[r]); // supprime l'entrée
-        }
-    }
-    env[w] = NULL;
+	int	status;
+
+	status = 0;
+	while (*args)
+	{
+		if (!is_valid_ident(*args))
+		{
+			print_unset_error(*args);
+			status = 1;
+		}
+		else
+			remove_env_var(&sh->env, *args);
+		args++;
+	}
+	return (status);
 }
 
-int builtin_unset(t_command *cmd, t_shell *sh)
+int	builtin_unset(t_command *cmd, t_shell *sh)
 {
-    size_t argc = 0;
-    for (t_element *e = cmd->element; e; e = e->next) if (e->kind == ARG) argc++;
-    char **argv = calloc(argc + 1, sizeof(char*));
-    if (!argv) return 1;
-    size_t i = 0; for (t_element *e = cmd->element; e; e = e->next)
-        if (e->kind == ARG) argv[i++] = e->u_.arg->str;
-    argv[i] = NULL;
+	size_t	argc;
+	char	**argv;
+	char	**args;
+	int		status;
 
-    int status = 0;
-    int idx = 0;
-    if (argv[0] && strcmp(argv[0], "unset") == 0) idx = 1;
-
-    for (; argv[idx]; ++idx){
-        if (!is_valid_ident(argv[idx])){
-            dprintf(STDERR_FILENO, "minishell: unset: `%s': not a valid identifier\n", argv[idx]);
-            status = 1;
-            continue;
-        }
-        remove_env_var(&sh->env, argv[idx]);
-    }
-    free(argv);
-    return status;
+	argc = count_args(cmd->element);
+	argv = (char **)ft_calloc(argc + 1, sizeof(char *));
+	if (!argv)
+		return (1);
+	fill_argv(cmd->element, argv);
+	args = argv;
+	if (args[0] && ft_strncmp(args[0], "unset", 5) == 0)
+		args++;
+	status = process_unset_args(args, sh);
+	free(argv);
+	return (status);
 }
