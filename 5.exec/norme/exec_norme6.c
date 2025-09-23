@@ -65,6 +65,22 @@ void	restore_stdio_and_close(int saved_in, int saved_out)
 		close(saved_out);
 }
 
+// int	run_single_builtin(t_command *cmd, t_shell *sh, t_all *all)
+// {
+// 	int	saved_in;
+// 	int	saved_out;
+// 	int	code;
+
+// 	if (!save_stdio(&saved_in, &saved_out))
+// 		return (1);
+// 	if (!apply_redirs_for_single(cmd, saved_in, saved_out))
+// 		return (1);
+// 	code = exec_builtin(cmd, sh, all);
+// 	restore_stdio_and_close(saved_in, saved_out);
+// 	sh->last_exit = code;
+// 	return (code);
+// }
+
 int	run_single_builtin(t_command *cmd, t_shell *sh, t_all *all)
 {
 	int	saved_in;
@@ -75,6 +91,11 @@ int	run_single_builtin(t_command *cmd, t_shell *sh, t_all *all)
 		return (1);
 	if (!apply_redirs_for_single(cmd, saved_in, saved_out))
 		return (1);
+	if (cmd->cmd == T_EXIT)
+	{
+		restore_stdio_and_close(saved_in, saved_out);
+		exec_builtin(cmd, sh, all);
+	}
 	code = exec_builtin(cmd, sh, all);
 	restore_stdio_and_close(saved_in, saved_out);
 	sh->last_exit = code;

@@ -14,10 +14,13 @@
 
 t_all	*get_all(void)
 {
-	static t_all all = {0};  // tout à NULL
+	static t_all	all;
+
+	all.char_list = NULL;
+	all.token_list = NULL;
+	all.command_list = NULL;
 	return (&all);
 }
-
 
 void	free_env(t_shell *shell)
 {

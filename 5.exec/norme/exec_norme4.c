@@ -12,20 +12,20 @@
 
 #include "../../minishell.h"
 
-void	free_argv(char **argv)
-{
-	size_t	i;
+// void	free_argv(char **argv)
+// {
+// 	size_t	i;
 
-	if (!argv)
-		return ;
-	i = 0;
-	while (argv[i])
-	{
-		free(argv[i]);
-		i++;
-	}
-	free(argv);
-}
+// 	if (!argv)
+// 		return ;
+// 	i = 0;
+// 	while (argv[i])
+// 	{
+// 		free(argv[i]);
+// 		i++;
+// 	}
+// 	free(argv);
+// }
 
 int	is_last_cmd(t_command *cmd)
 {

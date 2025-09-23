@@ -14,10 +14,9 @@
 
 static void	exit_no_arg(char **argv, t_shell *sh, t_all *all)
 {
-	free_argv(argv);
+	free(argv);
 	free_env(sh);
-	cleanall(all->char_list, all->token_list,
-		all->command_list);
+	cleanall(all->char_list, all->token_list, all->command_list);
 	rl_clear_history();
 	exit(sh->last_exit);
 }
@@ -27,10 +26,9 @@ static void	exit_numeric_error(char **argv, int idx, t_shell *sh, t_all *all)
 	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 	ft_putstr_fd(argv[idx], STDERR_FILENO);
 	ft_putendl_fd(": numeric argument required", STDERR_FILENO);
-	free_argv(argv);
+	free(argv);
 	free_env(sh);
-	cleanall(all->char_list, all->token_list,
-		all->command_list);
+	cleanall(all->char_list, all->token_list, all->command_list);
 	rl_clear_history();
 	exit(2);
 }
@@ -38,10 +36,9 @@ static void	exit_numeric_error(char **argv, int idx, t_shell *sh, t_all *all)
 static int	exit_too_many_args(char **argv, t_shell *sh, t_all *all)
 {
 	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
-	free_argv(argv);
+	free(argv);
 	free_env(sh);
-	cleanall(all->char_list, all->token_list,
-		all->command_list);
+	cleanall(all->char_list, all->token_list, all->command_list);
 	rl_clear_history();
 	return (1);
 }
@@ -75,7 +72,6 @@ static char	**collect_args(t_command *cmd, size_t *argc)
 	return (argv);
 }
 
-
 int	builtin_exit(t_command *cmd, t_shell *sh, t_all *all)
 {
 	size_t			argc;
@@ -91,16 +87,15 @@ int	builtin_exit(t_command *cmd, t_shell *sh, t_all *all)
 		idx = 1;
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (!argv[idx])
-		exit_no_arg(argv, sh, all); // ajouter cleanall
+		exit_no_arg(argv, sh, all);
 	if (!is_numeric_word(argv[idx]))
-		exit_numeric_error(argv, idx, sh, all); // ajouter cleanall
+		exit_numeric_error(argv, idx, sh, all);
 	if (argv[idx + 1])
-		return (exit_too_many_args(argv, sh, all)); // ajouter cleanall
+		return (exit_too_many_args(argv, sh, all));
 	code = to_exit_u8(argv[idx]);
-	free_argv(argv);
+	free(argv);
 	free_env(sh);
-	cleanall(all->char_list, all->token_list,
-		all->command_list);
+	cleanall(all->char_list, all->token_list, all->command_list);
 	rl_clear_history();
 	exit(code);
 }

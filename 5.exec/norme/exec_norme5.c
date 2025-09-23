@@ -85,7 +85,7 @@ static void	child_do_exec(t_command *cmd, t_shell *sh, t_all *all)
 		handle_exec_error(argv);
 }
 
-pid_t	spawn_one(t_command *cmd, int prev_rd, int out_wr, t_shell *sh, t_all *all)
+pid_t	spawn_one(t_all *all, int prev_rd, int out_wr, t_shell *sh)
 {
 	pid_t	pid;
 
@@ -97,9 +97,9 @@ pid_t	spawn_one(t_command *cmd, int prev_rd, int out_wr, t_shell *sh, t_all *all
 	}
 	if (pid == 0)
 	{
-		if (!child_prepare_fds(cmd, prev_rd, out_wr))
+		if (!child_prepare_fds(all->command_list, prev_rd, out_wr))
 			_exit(1);
-		child_do_exec(cmd, sh, all);
+		child_do_exec(all->command_list, sh, all);
 		_exit(127);
 	}
 	return (pid);

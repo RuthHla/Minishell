@@ -29,12 +29,12 @@ static int	setup_pipeinfo(t_command *cmd, int prev_rd, t_pipeinfo *pi)
 	return (1);
 }
 
-static int	spawn_and_record(t_command *cmd, int *prev_rd, t_pipeinfo *pi,
-		t_launch_ctx *ctx, t_all *all)
+static int	spawn_and_record(t_all *all, int *prev_rd, t_pipeinfo *pi,
+		t_launch_ctx *ctx)
 {
 	pid_t	pid;
 
-	pid = spawn_one(cmd, *prev_rd, pi->out_wr, ctx->sh, all);
+	pid = spawn_one(all, *prev_rd, pi->out_wr, ctx->sh);
 	if (pid < 0)
 	{
 		cleanup_on_fail(prev_rd, pi);
@@ -46,18 +46,19 @@ static int	spawn_and_record(t_command *cmd, int *prev_rd, t_pipeinfo *pi,
 	return (1);
 }
 
-static int	launch_one_cmd(t_command *cmd, int *prev_rd, t_launch_ctx *ctx, t_all *all)
+static int	launch_one_cmd(t_command *cmd, int *prev_rd, t_launch_ctx *ctx,
+		t_all *all)
 {
 	t_pipeinfo	pi;
 
 	if (!setup_pipeinfo(cmd, *prev_rd, &pi))
 		return (1);
-	if (!spawn_and_record(cmd, prev_rd, &pi, ctx, all))
+	if (!spawn_and_record(all, prev_rd, &pi, ctx))
 		return (1);
 	return (0);
 }
 
-static int	launch_all(t_command *lst, t_shell *sh, pid_t *pids, int *out_n, t_all *all)
+static int	launch_all(t_all *all, t_shell *sh, pid_t *pids, int *out_n)
 {
 	int				prev_rd;
 	t_command		*cmd;
@@ -68,7 +69,7 @@ static int	launch_all(t_command *lst, t_shell *sh, pid_t *pids, int *out_n, t_al
 	ctx.pids = pids;
 	ctx.out_n = out_n;
 	ctx.sh = sh;
-	cmd = lst;
+	cmd = all->command_list;
 	while (cmd)
 	{
 		if (launch_one_cmd(cmd, &prev_rd, &ctx, all))
@@ -84,16 +85,18 @@ static int	launch_all(t_command *lst, t_shell *sh, pid_t *pids, int *out_n, t_al
 	return (0);
 }
 
-int	run_pipeline(t_command *cmd_list, t_shell *sh, t_all *all)
+int	run_pipeline(t_all *all, t_shell *sh)
 {
-	pid_t	pids[256];
-	int		n;
-	int		last;
+	pid_t		pids[256];
+	int			n;
+	int			last;
+	t_command	*cmd_list;
 
+	cmd_list = all->command_list;
 	if (cmd_list && !cmd_list->next && is_builtin_cmd(cmd_list->cmd))
 		return (run_single_builtin(cmd_list, sh, all));
 	n = 0;
-	if (launch_all(cmd_list, sh, pids, &n, all) != 0)
+	if (launch_all(all, sh, pids, &n) != 0)
 		return (1);
 	last = wait_all(pids, n);
 	if (WIFEXITED(last))
