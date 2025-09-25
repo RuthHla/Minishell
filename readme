@@ -5,5 +5,7 @@ fonctionnel OK
 
 A regler :
 - Heredoc -> Ctrl+C
-- Ctrl+C -> dans un sous_minishell
-- Ctrl+D -> $? (chercher le pb que le correcteur avait trouve)
+- Ctrl+C -> dans un sous_minishell -> OK (reset_signal_for_child entre le fork et l'execve + modif de waitall pour ignorer les signaux du parent)
+- Ctrl+C -> si code erreur different de 0 alors ctrl+C ne marche pas -> OK fonctionne (setup() fin de wait all )
+- Ctrl+D -> $? (ligne vide -> le code last_exit suivant retourne 1)
+- si commence par chaine vide je dois prendre en compte

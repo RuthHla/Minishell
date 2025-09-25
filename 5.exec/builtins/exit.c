@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 10:30:31 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 14:56:11 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 14:50:02 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,6 @@ static void	exit_numeric_error(char **argv, int idx, t_shell *sh, t_all *all)
 	cleanall(all->char_list, all->token_list, all->command_list);
 	rl_clear_history();
 	exit(2);
-}
-
-static int	exit_too_many_args(char **argv, t_shell *sh, t_all *all)
-{
-	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
-	free(argv);
-	free_env(sh);
-	cleanall(all->char_list, all->token_list, all->command_list);
-	rl_clear_history();
-	return (1);
 }
 
 static char	**collect_args(t_command *cmd, size_t *argc)
@@ -90,8 +80,6 @@ int	builtin_exit(t_command *cmd, t_shell *sh, t_all *all)
 		exit_no_arg(argv, sh, all);
 	if (!is_numeric_word(argv[idx]))
 		exit_numeric_error(argv, idx, sh, all);
-	if (argv[idx + 1])
-		return (exit_too_many_args(argv, sh, all));
 	code = to_exit_u8(argv[idx]);
 	free(argv);
 	free_env(sh);

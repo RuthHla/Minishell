@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:44:37 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 11:56:31 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 15:31:16 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,12 @@ static int	launch_all(t_command *cmds, t_shell *sh, pid_t *pids, int *out_n)
 	return (0);
 }
 
+static int	exit_too_many_args(void)
+{
+	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
+	return (1);
+}
+
 int	run_pipeline(t_all *all, t_command *cmds, t_shell *sh)
 {
 	pid_t		pids[256];
@@ -93,18 +99,22 @@ int	run_pipeline(t_all *all, t_command *cmds, t_shell *sh)
 
 	cmd_list = cmds;
 	if (cmd_list && !cmd_list->next && is_builtin_cmd(cmd_list->cmd))
+	{
+		if (cmd_list->cmd == T_EXIT && cmd_list->nb_args > 2)
+			return (exit_too_many_args());
 		return (run_single_builtin(cmd_list, sh, all));
-	n = 0;
+	}
 	if (launch_all(cmds, sh, pids, &n) != 0)
 		return (1);
 	last = wait_all(pids, n);
-	if (WIFEXITED(last))
-		sh->last_exit = WEXITSTATUS(last);
-	else if (WIFSIGNALED(last))
+	if (WIFSIGNALED(last))
 		sh->last_exit = 128 + WTERMSIG(last);
+	else if (WIFEXITED(last))
+		sh->last_exit = WEXITSTATUS(last);
 	else
 		sh->last_exit = 1;
 	if (check_signals())
 		sh->last_exit = 130;
+	setup_signals();
 	return (sh->last_exit);
 }

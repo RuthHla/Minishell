@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:08:15 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 12:03:05 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 13:59:23 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ pid_t	spawn_one(t_command *cmd, int prev_rd, int out_wr, t_shell *sh)
 	}
 	if (pid == 0)
 	{
+		reset_signals_for_child();
 		if (!child_prepare_fds(cmd, prev_rd, out_wr))
 			_exit(1);
 		child_do_exec(cmd, sh, all);

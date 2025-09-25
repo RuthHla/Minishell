@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir_norme2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:33:22 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 13:10:11 by adenny           ###   ########.fr       */
+/*   Updated: 2025/09/25 14:12:05 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ int	wait_all(pid_t *pids, int n)
 	int	st;
 	int	last;
 
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	i = 0;
 	last = 0;
 	while (i < n)
