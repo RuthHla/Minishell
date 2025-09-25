@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:24:41 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/17 16:42:25 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 10:55:13 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,8 +259,8 @@ size_t					count_args_nonempty(const t_command *cmd);
 void					free_argv_dup(char **argv);
 int						child_prepare_fds(t_command *cmd, int prev_rd,
 							int out_wr);
-pid_t					spawn_one(t_all *all, int prev_rd, int out_wr,
-							t_shell *sh);
+pid_t					spawn_one(t_all *all, t_command *cmd, int prev_rd,
+							int out_wr, t_shell *sh);
 int						wait_all(pid_t *pids, int n);
 int						run_single_builtin(t_command *cmd, t_shell *sh,
 							t_all *all);
@@ -272,7 +272,8 @@ void					advance_pipe_state(int *prev_rd, t_pipeinfo *pi);
 void					cleanup_on_fail(int *prev_rd, t_pipeinfo *pi);
 
 // exec
-int						run_pipeline(t_all *all, t_shell *sh);
+int						run_pipeline(t_all *all, t_command *cmd_list,
+							t_shell *sh);
 int						exec_builtin(t_command *cmd, t_shell *sh, t_all *all);
 
 // redic

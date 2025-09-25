@@ -6,38 +6,55 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 15:14:34 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/17 17:13:44 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 10:54:51 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	all_round_cleanup(t_all *a, int code)
+// static int	all_round_cleanup(t_all *a, int code)
+// {
+// 	free_character_list(a->char_list);
+// 	free_token_list(a->token_list);
+// 	cleanup(a->command_list);
+// 	return (code);
+// }
+static int	free_and_return(t_character *chars, t_token *toks, t_command *cmds,
+		int code)
 {
-	free_character_list(a->char_list);
-	free_token_list(a->token_list);
-	cleanup(a->command_list);
+	if (cmds)
+		cleanup(cmds);
+	if (toks)
+		free_token_list(toks);
+	if (chars)
+		free_character_list(chars);
 	return (code);
 }
 
 static int	one_shot(char *line, t_shell *sh)
 {
-	int		code;
-	t_all	*all;
+	t_character	*chars;
+	t_token		*toks;
+	t_command	*cmds;
+	t_all		*all;
+	int			code;
 
 	all = get_all();
-	all->char_list = build_char_list(line);
-	if (!all->char_list)
-		return (all_round_cleanup(all, 1));
-	all->token_list = build_token_list(all->char_list);
-	if (!all->token_list)
-		return (all_round_cleanup(all, 1));
-	all->command_list = init_struct_globale(all->token_list);
-	if (!all->command_list)
-		return (all_round_cleanup(all, 1));
-	expander(&all->command_list, sh);
-	code = run_pipeline(all, sh);
-	return (all_round_cleanup(all, code));
+	chars = build_char_list(line);
+	if (!chars)
+		return (1);
+	all->char_list = chars;
+	toks = build_token_list(all->char_list);
+	if (!toks)
+		return (free_and_return(chars, NULL, NULL, 1));
+	all->token_list = toks;
+	cmds = init_struct_globale(all->token_list);
+	if (!cmds)
+		return (free_and_return(chars, toks, NULL, 1));
+	all->command_list = cmds;
+	expander(&cmds, sh);
+	code = run_pipeline(all, cmds, sh);
+	return (free_and_return(chars, toks, cmds, code));
 }
 
 static int	init_env(char **env, t_shell *shell)
