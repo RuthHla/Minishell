@@ -6,19 +6,12 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 15:14:34 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/25 10:54:51 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 12:36:23 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// static int	all_round_cleanup(t_all *a, int code)
-// {
-// 	free_character_list(a->char_list);
-// 	free_token_list(a->token_list);
-// 	cleanup(a->command_list);
-// 	return (code);
-// }
 static int	free_and_return(t_character *chars, t_token *toks, t_command *cmds,
 		int code)
 {
@@ -39,7 +32,7 @@ static int	one_shot(char *line, t_shell *sh)
 	t_all		*all;
 	int			code;
 
-	all = get_all();
+	all = get_all(1);
 	chars = build_char_list(line);
 	if (!chars)
 		return (1);

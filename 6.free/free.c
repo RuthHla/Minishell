@@ -6,19 +6,22 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 15:47:13 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/17 15:08:07 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 11:52:25 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_all	*get_all(void)
+t_all	*get_all(int reset)
 {
 	static t_all	all;
 
-	all.char_list = NULL;
-	all.token_list = NULL;
-	all.command_list = NULL;
+	if (reset)
+	{
+		all.char_list = NULL;
+		all.token_list = NULL;
+		all.command_list = NULL;
+	}
 	return (&all);
 }
 

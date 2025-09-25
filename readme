@@ -1,3 +1,9 @@
 utiliser : valgrind --leak-check=full --show-leak-kinds=all --suppressions=readline.supp ./minishell
 
-plus de leak/probleme de fd reste ouvert mais plus 100% fonctionnel  cause du code erreur principalement
+Leaks OK 
+fonctionnel OK
+
+A regler :
+- Heredoc -> Ctrl+C
+- Ctrl+C -> dans un sous_minishell
+- Ctrl+D -> $? (chercher le pb que le correcteur avait trouve)

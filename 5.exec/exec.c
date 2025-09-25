@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:44:37 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 10:55:39 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 11:56:31 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ static int	setup_pipeinfo(t_command *cmd, int prev_rd, t_pipeinfo *pi)
 	return (1);
 }
 
-static int	spawn_and_record(t_all *all, t_command *cmd, int *prev_rd,
-		t_pipeinfo *pi, t_launch_ctx *ctx)
+static int	spawn_and_record(t_command *cmd, int *prev_rd, t_pipeinfo *pi,
+		t_launch_ctx *ctx)
 {
 	pid_t	pid;
 
-	pid = spawn_one(all, cmd, *prev_rd, pi->out_wr, ctx->sh);
+	pid = spawn_one(cmd, *prev_rd, pi->out_wr, ctx->sh);
 	if (pid < 0)
 	{
 		cleanup_on_fail(prev_rd, pi);
@@ -46,20 +46,18 @@ static int	spawn_and_record(t_all *all, t_command *cmd, int *prev_rd,
 	return (1);
 }
 
-static int	launch_one_cmd(t_command *cmd, int *prev_rd, t_launch_ctx *ctx,
-		t_all *all)
+static int	launch_one_cmd(t_command *cmd, int *prev_rd, t_launch_ctx *ctx)
 {
 	t_pipeinfo	pi;
 
 	if (!setup_pipeinfo(cmd, *prev_rd, &pi))
 		return (1);
-	if (!spawn_and_record(all, cmd, prev_rd, &pi, ctx))
+	if (!spawn_and_record(cmd, prev_rd, &pi, ctx))
 		return (1);
 	return (0);
 }
 
-static int	launch_all(t_all *all, t_command *cmds, t_shell *sh, pid_t *pids,
-		int *out_n)
+static int	launch_all(t_command *cmds, t_shell *sh, pid_t *pids, int *out_n)
 {
 	int				prev_rd;
 	t_command		*cmd;
@@ -73,7 +71,7 @@ static int	launch_all(t_all *all, t_command *cmds, t_shell *sh, pid_t *pids,
 	cmd = cmds;
 	while (cmd)
 	{
-		if (launch_one_cmd(cmd, &prev_rd, &ctx, all))
+		if (launch_one_cmd(cmd, &prev_rd, &ctx))
 		{
 			if (prev_rd >= 0)
 				close(prev_rd);
@@ -97,7 +95,7 @@ int	run_pipeline(t_all *all, t_command *cmds, t_shell *sh)
 	if (cmd_list && !cmd_list->next && is_builtin_cmd(cmd_list->cmd))
 		return (run_single_builtin(cmd_list, sh, all));
 	n = 0;
-	if (launch_all(all, cmds, sh, pids, &n) != 0)
+	if (launch_all(cmds, sh, pids, &n) != 0)
 		return (1);
 	last = wait_all(pids, n);
 	if (WIFEXITED(last))

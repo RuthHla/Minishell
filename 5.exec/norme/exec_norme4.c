@@ -3,29 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec_norme4.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 12:43:12 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 13:02:36 by adenny           ###   ########.fr       */
+/*   Updated: 2025/09/25 12:02:59 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
-
-// void	free_argv(char **argv)
-// {
-// 	size_t	i;
-
-// 	if (!argv)
-// 		return ;
-// 	i = 0;
-// 	while (argv[i])
-// 	{
-// 		free(argv[i]);
-// 		i++;
-// 	}
-// 	free(argv);
-// }
 
 int	is_last_cmd(t_command *cmd)
 {

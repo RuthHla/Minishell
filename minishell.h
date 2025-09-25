@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:24:41 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/25 10:55:13 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 12:02:39 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,7 +249,6 @@ void					print_exec_error(const char *path, const char *argv0,
 							int e);
 char					*join_path(const char *dir, const char *cmd);
 char					*resolve_in_path(const char *cmd, char **env);
-// void					free_argv(char **argv);
 int						is_last_cmd(t_command *cmd);
 int						is_simple_builtin_type(t_type_cmd c);
 int						exec_with_path(char **argv, t_shell *sh);
@@ -259,7 +258,7 @@ size_t					count_args_nonempty(const t_command *cmd);
 void					free_argv_dup(char **argv);
 int						child_prepare_fds(t_command *cmd, int prev_rd,
 							int out_wr);
-pid_t					spawn_one(t_all *all, t_command *cmd, int prev_rd,
+pid_t					spawn_one(t_command *cmd, int prev_rd,
 							int out_wr, t_shell *sh);
 int						wait_all(pid_t *pids, int n);
 int						run_single_builtin(t_command *cmd, t_shell *sh,
@@ -303,7 +302,7 @@ int						handle_export_arg(const char *arg, t_shell *sh);
 int						is_builtin_cmd(t_type_cmd cmd);
 
 // 6.free/ free.c
-t_all					*get_all(void);
+t_all					*get_all(int reset);
 void					free_env(t_shell *shell);
 void					free_character_list(t_character *head);
 void					free_token_list(t_token *head);

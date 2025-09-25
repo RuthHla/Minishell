@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:08:15 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 10:36:35 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/25 12:03:05 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,12 @@ static void	child_do_exec(t_command *cmd, t_shell *sh, t_all *all)
 		handle_exec_error(argv);
 }
 
-pid_t	spawn_one(t_all *all, t_command *cmd, int prev_rd, int out_wr, t_shell *sh)
+pid_t	spawn_one(t_command *cmd, int prev_rd, int out_wr, t_shell *sh)
 {
 	pid_t	pid;
+	t_all	*all;
 
+	all = get_all(0);
 	pid = fork();
 	if (pid < 0)
 	{
