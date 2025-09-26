@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:24:41 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/25 12:02:39 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 14:52:07 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef enum e_type
 	APPEND,
 	DOLLAR,
 	SPECIAL_VARIABLE,
+	EMPTY_CMD,
 	UNKNOWN,
 }						t_type;
 
@@ -134,6 +135,7 @@ typedef struct s_shell
 	char				**env;
 	int					last_exit;
 	int					shlvl;
+	int					empty_var;
 }						t_shell;
 
 typedef struct s_all
@@ -224,7 +226,7 @@ void					setup_signals(void);
 void					expander(t_command **cmd_list, t_shell *shell);
 
 // norme
-int						apply_redir(t_ios *ios, t_redir *r);
+int						apply_redir(t_ios *ios, t_redir *r, t_shell *sh);
 int						is_var_start(int c);
 int						is_var_continue(int c);
 int						is_valid_ident(const char *s);
@@ -257,15 +259,15 @@ void					putstr_err(const char *s);
 size_t					count_args_nonempty(const t_command *cmd);
 void					free_argv_dup(char **argv);
 int						child_prepare_fds(t_command *cmd, int prev_rd,
-							int out_wr);
-pid_t					spawn_one(t_command *cmd, int prev_rd,
 							int out_wr, t_shell *sh);
+pid_t					spawn_one(t_command *cmd, int prev_rd, int out_wr,
+							t_shell *sh);
 int						wait_all(pid_t *pids, int n);
 int						run_single_builtin(t_command *cmd, t_shell *sh,
 							t_all *all);
 void					restore_stdio_and_close(int saved_in, int saved_out);
 int						apply_redirs_for_single(t_command *cmd, int saved_in,
-							int saved_out);
+							int saved_out, t_shell *sh);
 int						save_stdio(int *saved_in, int *saved_out);
 void					advance_pipe_state(int *prev_rd, t_pipeinfo *pi);
 void					cleanup_on_fail(int *prev_rd, t_pipeinfo *pi);
@@ -278,13 +280,14 @@ int						exec_builtin(t_command *cmd, t_shell *sh, t_all *all);
 // redic
 void					close_redirs(t_ios *ios);
 int						apply_redirs(const t_ios *ios);
-int						collect_redirs_fds(t_element *elem, t_ios *ios);
+int						collect_redirs_fds(t_element *elem, t_ios *ios,
+							t_shell *sh);
 int						open_in(const char *path);
 int						open_out_trunc(const char *path);
 int						open_out_append(const char *path);
 
 // heredoc
-int						create_heredoc_fd(const char *delim);
+int						create_heredoc_fd(char *delim, t_shell *sh);
 
 // builtin
 int						builtin_echo(t_command *cmd, t_shell *sh);
@@ -316,5 +319,6 @@ void					cleanall(t_character *char_list, t_token *token_list,
 void					ft_putstr_fd(char *s, int fd);
 void					print_error(char *msg);
 void					print_syntax_error(char *token);
+int						exit_too_many_args(void);
 
 #endif

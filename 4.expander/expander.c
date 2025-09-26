@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 14:01:38 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/17 14:38:01 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 14:47:17 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,18 +70,30 @@ static void	expand_redir(t_element *element, t_shell *shell)
 	}
 }
 
-static void	process_command_elements(t_command *cmd, t_shell *shell)
+void	process_command_elements(t_command *cmd, t_shell *shell)
 {
-	t_element	*element;
+	t_element	*e;
+	int			first_arg;
 
-	element = cmd->element;
-	while (element)
+	first_arg = 1;
+	e = cmd->element;
+	while (e)
 	{
-		if (element->kind == ARG)
-			expand_arg(element, shell);
-		else if (element->kind == REDIR)
-			expand_redir(element, shell);
-		element = element->next;
+		if (e->kind == ARG)
+		{
+			expand_arg(e, shell);
+			if (first_arg && e->u_.arg->str[0] == '\0'
+				&& (e->u_.arg->type == DOLLAR
+					|| e->u_.arg->type == SPECIAL_VARIABLE))
+			{
+				e = remove_empty_var_arg(cmd, e);
+				continue ;
+			}
+			first_arg = 0;
+		}
+		else if (e->kind == REDIR)
+			expand_redir(e, shell);
+		e = e->next;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:33:22 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 14:12:05 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 11:31:43 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	replace_fd(int *dst, int newfd)
 	return (1);
 }
 
-static int	set_in_redir(t_ios *ios, t_redir *r)
+static int	set_in_redir(t_ios *ios, t_redir *r, t_shell *sh)
 {
 	int	fd;
 
@@ -30,7 +30,7 @@ static int	set_in_redir(t_ios *ios, t_redir *r)
 	if (r->type == REDIR_IN)
 		fd = open_in(r->target);
 	else if (r->type == HEREDOC)
-		fd = create_heredoc_fd(r->target);
+		fd = create_heredoc_fd(r->target, sh);
 	return (replace_fd(&ios->in_fd, fd));
 }
 
@@ -46,10 +46,10 @@ static int	set_out_redir(t_ios *ios, t_redir *r)
 	return (replace_fd(&ios->out_fd, fd));
 }
 
-int	apply_redir(t_ios *ios, t_redir *r)
+int	apply_redir(t_ios *ios, t_redir *r, t_shell *sh)
 {
 	if (r->type == REDIR_IN || r->type == HEREDOC)
-		return (set_in_redir(ios, r));
+		return (set_in_redir(ios, r, sh));
 	if (r->type == REDIR_OUT || r->type == APPEND)
 		return (set_out_redir(ios, r));
 	return (1);

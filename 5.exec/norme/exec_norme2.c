@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_norme2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 12:24:35 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 12:45:25 by adenny           ###   ########.fr       */
+/*   Updated: 2025/09/26 14:49:34 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@ int	exec_with_path(char **argv, t_shell *sh)
 	if (!argv || !argv[0])
 	{
 		errno = EINVAL;
+		return (-1);
+	}
+	if (argv[0][0] == '\0')
+	{
+		errno = ENOENT;
 		return (-1);
 	}
 	if (ft_strchr(argv[0], '/'))

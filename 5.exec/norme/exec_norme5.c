@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:08:15 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 13:59:23 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 13:59:02 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,13 @@ static int	fill_argv_dup(const t_command *cmd, char **argv)
 	e = cmd->element;
 	while (e)
 	{
-		if (e->kind == ARG && e->u_.arg && e->u_.arg->str && *e->u_.arg->str)
+		if (e->kind == ARG && e->u_.arg && e->u_.arg->str)
 		{
 			argv[i] = ft_strdup(e->u_.arg->str);
 			if (!argv[i])
 			{
 				while (i > 0)
-				{
-					i--;
-					free(argv[i]);
-				}
+					free(argv[--i]);
 				return (0);
 			}
 			i++;
@@ -46,7 +43,7 @@ static char	**build_argv(const t_command *cmd)
 	size_t	argc;
 	char	**argv;
 
-	argc = count_args_nonempty(cmd);
+	argc = count_args(cmd->element);
 	if (argc == 0)
 		return (NULL);
 	argv = (char **)ft_calloc(argc + 1, sizeof(char *));
@@ -79,7 +76,7 @@ static void	child_do_exec(t_command *cmd, t_shell *sh, t_all *all)
 	if (is_builtin_cmd(cmd->cmd))
 		_exit(exec_builtin(cmd, sh, all));
 	argv = build_argv(cmd);
-	if (!argv || !argv[0])
+	if (!argv)
 		_exit(0);
 	if (exec_with_path(argv, sh) < 0)
 		handle_exec_error(argv);
@@ -100,7 +97,7 @@ pid_t	spawn_one(t_command *cmd, int prev_rd, int out_wr, t_shell *sh)
 	if (pid == 0)
 	{
 		reset_signals_for_child();
-		if (!child_prepare_fds(cmd, prev_rd, out_wr))
+		if (!child_prepare_fds(cmd, prev_rd, out_wr, sh))
 			_exit(1);
 		child_do_exec(cmd, sh, all);
 		_exit(127);

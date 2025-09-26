@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:44:37 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/25 15:31:16 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 14:51:31 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,6 @@ static int	launch_all(t_command *cmds, t_shell *sh, pid_t *pids, int *out_n)
 	if (prev_rd >= 0)
 		close(prev_rd);
 	return (0);
-}
-
-static int	exit_too_many_args(void)
-{
-	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
-	return (1);
 }
 
 int	run_pipeline(t_all *all, t_command *cmds, t_shell *sh)

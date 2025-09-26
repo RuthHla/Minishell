@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 11:26:30 by alandel           #+#    #+#             */
-/*   Updated: 2025/09/17 15:04:14 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 14:51:43 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,10 @@ void	print_syntax_error(char *token)
 	else
 		ft_putstr_fd("newline", 2);
 	ft_putstr_fd("'\n", 2);
+}
+
+int	exit_too_many_args(void)
+{
+	ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
+	return (1);
 }

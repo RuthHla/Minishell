@@ -6,7 +6,7 @@
 /*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 12:21:41 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/17 12:41:50 by alandel          ###   ########.fr       */
+/*   Updated: 2025/09/26 14:10:15 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@ static void	print_errno_detail(const char *shown, int e)
 static void	print_no_path_cmd_error(const char *argv0, int e)
 {
 	if (e == ENOENT)
-		print2_err(argv0, ": command not found\n");
+	{
+		ft_putstr_fd("minishell: ", 2);
+		print2_err(argv0, " : command not found\n");
+	}
 	else
 	{
 		print2_err(argv0, ": ");
@@ -50,6 +53,12 @@ void	print_exec_error(const char *path, const char *argv0, int e)
 {
 	const char	*shown;
 
+	if (!argv0 || argv0[0] == '\0')
+	{
+		print_error(": command not found");
+		e = ENOENT;
+		return ;
+	}
 	shown = argv0;
 	if (path)
 		shown = path;

@@ -21,7 +21,7 @@ SRC_TEST_EXEC := main.c \
 2.tokenizer/tokenize.c 2.tokenizer/utils.c 2.tokenizer/local_utils.c \
 3.parser/init.c 3.parser/utils.c 3.parser/parse_tokens.c 3.parser/cmd.c 3.parser/add.c \
 0.env/env.c 0.env/utils.c 0.env/signals.c 0.env/shlvl.c \
-4.expander/expander.c 4.expander/utils0.c 4.expander/utils1.c 4.expander/utils2.c 4.expander/utils3.c \
+4.expander/expander.c 4.expander/utils4.c 4.expander/utils0.c 4.expander/utils1.c 4.expander/utils2.c 4.expander/utils3.c \
 5.exec/exec.c 5.exec/heredoc.c 5.exec/redir.c \
 5.exec/builtins/echo.c 5.exec/builtins/cd.c 5.exec/builtins/pwd.c 5.exec/builtins/export.c 5.exec/builtins/unset.c \
 5.exec/builtins/env.c 5.exec/builtins/exit.c \

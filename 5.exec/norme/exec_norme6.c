@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_norme6.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 13:19:03 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 13:20:10 by adenny           ###   ########.fr       */
+/*   Updated: 2025/09/26 14:49:46 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,12 @@ int	save_stdio(int *saved_in, int *saved_out)
 	return (1);
 }
 
-int	apply_redirs_for_single(t_command *cmd, int saved_in, int saved_out)
+int	apply_redirs_for_single(t_command *cmd, int saved_in, int saved_out,
+		t_shell *sh)
 {
 	t_ios	ios;
 
-	if (!collect_redirs_fds(cmd->element, &ios))
+	if (!collect_redirs_fds(cmd->element, &ios, sh))
 	{
 		if (saved_in >= 0)
 			close(saved_in);
@@ -89,7 +90,7 @@ int	run_single_builtin(t_command *cmd, t_shell *sh, t_all *all)
 
 	if (!save_stdio(&saved_in, &saved_out))
 		return (1);
-	if (!apply_redirs_for_single(cmd, saved_in, saved_out))
+	if (!apply_redirs_for_single(cmd, saved_in, saved_out, sh))
 		return (1);
 	if (cmd->cmd == T_EXIT)
 	{

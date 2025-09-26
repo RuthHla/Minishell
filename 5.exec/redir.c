@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adenny <adenny@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alandel <alandel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 09:26:50 by adenny            #+#    #+#             */
-/*   Updated: 2025/09/16 09:39:30 by adenny           ###   ########.fr       */
+/*   Updated: 2025/09/26 11:32:30 by alandel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	open_out_append(const char *path)
 	return (fd);
 }
 
-int	collect_redirs_fds(t_element *elem, t_ios *ios)
+int	collect_redirs_fds(t_element *elem, t_ios *ios, t_shell *sh)
 {
 	t_redir	*r;
 
@@ -55,7 +55,7 @@ int	collect_redirs_fds(t_element *elem, t_ios *ios)
 			r = elem->u_.redirs;
 			while (r)
 			{
-				if (!apply_redir(ios, r))
+				if (!apply_redir(ios, r, sh))
 					return (0);
 				r = r->next;
 			}

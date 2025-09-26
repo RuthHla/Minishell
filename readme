@@ -4,8 +4,12 @@ Leaks OK
 fonctionnel OK
 
 A regler :
-- Heredoc -> Ctrl+C
+- Heredoc -> Ctrl+C -> OK
 - Ctrl+C -> dans un sous_minishell -> OK (reset_signal_for_child entre le fork et l'execve + modif de waitall pour ignorer les signaux du parent)
 - Ctrl+C -> si code erreur different de 0 alors ctrl+C ne marche pas -> OK fonctionne (setup() fin de wait all )
+- si commence par chaine vide je dois prendre en compte -> OK
+
+- fusionner partie heredoc amaury
 - Ctrl+D -> $? (ligne vide -> le code last_exit suivant retourne 1)
-- si commence par chaine vide je dois prendre en compte
+- TESTER avec excel en mettant valgrind dessus
+- check Makefile
